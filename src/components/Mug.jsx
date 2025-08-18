@@ -42,7 +42,7 @@ export function Mug(props) {
           geometry={nodes.Cup.geometry}
           material={materials.Porcelan}
         >
-          <meshMatcapMaterial
+          <meshStandardMaterial
             color={
               canvas.backgroundColor === "#ffffff"
                 ? "#f5f5f5"
@@ -69,6 +69,7 @@ export function Mug(props) {
 }
 
 useGLTF.preload("/cup.glb");
+
 
 
 
