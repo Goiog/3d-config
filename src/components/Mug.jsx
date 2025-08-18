@@ -28,8 +28,8 @@ export function Mug(props) {
 
   return (
     <group {...props} dispose={null}>
-      <ambientLight intensity={3} />
-      <directionalLight position={[5, 5, 5]} intensity={4} />
+      <ambientLight intensity={1.5} />
+      <directionalLight position={[5, 5, 5]} intensity={2} />
       <group
         name="Scene"
         scale={0.16}
@@ -59,8 +59,7 @@ export function Mug(props) {
           receiveShadow
           geometry={nodes.CupDrawArea.geometry}
           material={materials.DecalMaterial}
-        >
-          <CanvasTexture />
+        ></mesh><meshStandardMaterial map={materials.Canvascapmaterial.map} />
         </mesh>
       </group>
     </group>
@@ -68,4 +67,5 @@ export function Mug(props) {
 }
 
 useGLTF.preload("/cup.glb");
+
 
