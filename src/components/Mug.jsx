@@ -59,14 +59,14 @@ export function Mug(props) {
           receiveShadow
           geometry={nodes.CupDrawArea.geometry}
           material={materials.DecalMaterial}
-        >  <meshStandardMaterial map={texture} />
-</mesh>
+        >  <CanvasTexture /> </mesh>
       </group>
     </group>
   );
 }
 
 useGLTF.preload("/cup.glb");
+
 
 
 
