@@ -57,7 +57,12 @@ export function Poster(props) {
             castShadow
             receiveShadow
             geometry={nodes.Cube004.geometry}
-            material={materials.Material_003}
+            material={materials.Material_003}><CanvasTexture /> </mesh>
+          
+        <mesh name="EscudoRayo"  geometry={nodes.EscudoRayo.geometry} material={materials.Escudo}
+          scale={[0.1,1,1]}
+        />
+        <mesh name="Cube004" geometry={nodes.Cube004.geometry} material={materials.Glass_Simple}
           >
             <meshStandardMaterial
               color={
@@ -69,11 +74,6 @@ export function Poster(props) {
 
             {/* <CanvasTexture /> */}
           </mesh>
-        <mesh name="EscudoRayo"  geometry={nodes.EscudoRayo.geometry} material={materials.Escudo}
-          scale={[0.1,1,1]}
-        />
-        <mesh name="Cube004" geometry={nodes.Cube004.geometry} material={materials.Glass_Simple}
-        >  <CanvasTexture /> </mesh>
       </group>
     </group>
   );
