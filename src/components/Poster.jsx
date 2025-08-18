@@ -32,8 +32,8 @@ export function Poster(props) {
       <directionalLight position={[5, 5, 5]} intensity={2} />
       <group
         name="Scene"
-        scale={[-0.25,0.25,0.25]}
-        rotation={[Math.PI / 2, 0, 0.2]}
+        scale={[0.25,0.25,0.25]}
+        rotation={[Math.PI / 2, .5, 0.1]}
       >
         <mesh
           name="Plane007"
@@ -48,7 +48,24 @@ export function Poster(props) {
                 ? "#f5f5f5"
                 : decreaseOpacity(canvas.backgroundColor, 0.5)
             }
-          />
+              />
+
+              {/* <CanvasTexture /> */}
+            </mesh>
+          <mesh
+            name="Cube004"
+            castShadow
+            receiveShadow
+            geometry={nodes.Cube004.geometry}
+            material={materials.Material_003}
+          >
+            <meshStandardMaterial
+              color={
+                canvas.backgroundColor === "#ffffff"
+                  ? "#f5f5f5"
+                  : decreaseOpacity(canvas.backgroundColor, 0.5)
+              }
+            />
 
             {/* <CanvasTexture /> */}
           </mesh>
