@@ -53,11 +53,11 @@ export function Poster(props) {
               {/* <CanvasTexture /> */}
             </mesh>
           <mesh
-            name="Cube004"
+            name="Cube005"
             castShadow
             receiveShadow
-            geometry={nodes.Cube004.geometry}
-            material={materials.Material_003}
+            geometry={nodes.Cube005.geometry}
+            material={materials.Glass_Simple}
           >
             <meshStandardMaterial
               color={
@@ -73,7 +73,8 @@ export function Poster(props) {
           scale={[0.1,1,1]}
           position={[-0.15,0,0]}
         />
-        <mesh name="Cube005" geometry={nodes.Cube005.geometry} material={materials.Glass_Simple}
+        <mesh name="Cube004" castShadow
+            receiveShadow geometry={nodes.Cube004.geometry} material={materials.Material_003}
         >  <CanvasTexture /> </mesh>
       </group>
     </group>
@@ -81,6 +82,7 @@ export function Poster(props) {
 }
 
 useGLTF.preload("/poster2.glb");
+
 
 
 
