@@ -32,18 +32,15 @@ export function Poster(props) {
       <directionalLight position={[5, 5, 5]} intensity={2} />
       <group
         name="Scene"
-        scale={0.25}
-        rotation={[0, Math.PI / 2, Math.PI / 2.3]}
+        scale={[-0.25,0.25,0.25]}
+        rotation={[Math.PI / 2, 0, 0.2]}
       >
         <mesh
           name="Plane007"
           castShadow
           receiveShadow
           geometry={nodes.Plane007.geometry}
-          material={materials["Material.002"]}
-          position={[-0.194, 1.208, 0.072]}
-          rotation={[1.572, 0.047, -1.579]}
-          scale={0.746}
+          material={materials.Material_002}
         >
           <meshStandardMaterial
             color={
@@ -52,27 +49,13 @@ export function Poster(props) {
                 : decreaseOpacity(canvas.backgroundColor, 0.5)
             }
           />
-        </mesh>
-        <mesh
-          name="Plane"
-          castShadow
-          receiveShadow
-          geometry={nodes.Plane.geometry}
-          material={materials["Escudo"]}
-          position={[-0.212, 1.447, 0.072]}
-          rotation={[0.001, 0.008, 1.618]}
-          scale={0.771}
-        >
-        </mesh>
-        <mesh
-          name="Cube004"
-          castShadow
-          receiveShadow
-          geometry={nodes.Cube004.geometry}
-          material={materials["Glass Simple"]}
-          position={[-0.207, 1.418, 0.05]}
-          rotation={[0.001, 0.008, 0.047]}
-          scale={[0.009, 0.771, 0.771]}
+
+            {/* <CanvasTexture /> */}
+          </mesh>
+        <mesh name="EscudoRayo"  geometry={nodes.EscudoRayo.geometry} material={materials.Escudo}
+          scale={[0.1,1,1]}
+        />
+        <mesh name="Cube004" geometry={nodes.Cube004.geometry} material={materials.Glass_Simple}
         >  <CanvasTexture /> </mesh>
       </group>
     </group>
@@ -80,7 +63,6 @@ export function Poster(props) {
 }
 
 useGLTF.preload("/poster2.glb");
-
 
 
 
