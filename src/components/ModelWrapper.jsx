@@ -142,20 +142,20 @@ const ModelWrapper = ({ Model, cameraRef, orbitRef }) => {
 
       if (
         selectedModel.current === "Shirt" &&
-        intersects[0].object.name !== "Object_4"
+        intersects[0].object.name !== "Object_6"
       ) {
         return null;
       }
       if (
         selectedModel.current === "Cap" &&
-        intersects[0].object.name !== "10131_BaseballCap_v2_L3"
+        intersects[0].object.name !== "PlaneCanvas"
       ) {
         return null;
       }
 
       if (
         selectedModel.current === "Poster" &&
-        intersects[0].object.name !== "Cube004"
+        intersects[0].object.name !== "Cube005"
       ) {
         return null;
       }
@@ -280,4 +280,3 @@ const CanvasTexture = React.memo(({ flip }) => {
 });
 
 export { CanvasTexture };
-
