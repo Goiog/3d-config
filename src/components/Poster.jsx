@@ -45,7 +45,7 @@ export function Poster(props) {
           rotation={[1.572, 0.047, -1.579]}
           scale={0.746}
         >
-          <meshMatcapMaterial
+          <meshStandardMaterial
             color={
               canvas.backgroundColor === "#ffffff"
                 ? "#f5f5f5"
@@ -63,7 +63,7 @@ export function Poster(props) {
           rotation={[0.001, 0.008, 1.618]}
           scale={0.771}
         >
-          <meshMatcapMaterial
+          <meshStandardMaterial
             color={
               canvas.backgroundColor === "#ffffff"
                 ? "#f5f5f5"
@@ -91,5 +91,6 @@ export function Poster(props) {
 }
 
 useGLTF.preload("/poster2.glb");
+
 
 
