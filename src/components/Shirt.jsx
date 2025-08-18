@@ -16,8 +16,8 @@ export function Shirt(props) {
 
   return (
     <group {...props} dispose={null}>
-      <ambientLight intensity={1} />
-      <directionalLight position={[5, 5, 5]} intensity={2} />
+      <ambientLight intensity={2} />
+      <directionalLight position={[5, 5, 5]} intensity={3} />
 
       <group
         name="Sketchfab_model"
