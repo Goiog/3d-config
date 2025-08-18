@@ -16,7 +16,7 @@ export function Shirt(props) {
 
   return (
     <group {...props} dispose={null}>
-      <ambientLight intensity={1} />
+      <ambientLight intensity={1.5} />
       <directionalLight position={[5, 5, 5]} intensity={2} />
 
       <group
@@ -28,8 +28,8 @@ export function Shirt(props) {
         <mesh name="Object_7"  geometry={nodes.Object_7.geometry} material={materials.Material_001} />
         <mesh name="Object_8"  geometry={nodes.Object_8.geometry} material={materials.Material_002} />
         <mesh name="Object_9"  geometry={nodes.Object_9.geometry} material={materials.Material_003} />
-        <mesh name="Object_6" geometry={nodes.Object_6.geometry} material={materials.Tshirtmaterialout} ><CanvasTexture />
-          </mesh>
+        <mesh name="Object_6" geometry={nodes.Object_6.geometry} material={materials.Tshirtmaterialout} ><meshStandardMaterial map={materials.Canvascapmaterial.map} />
+        </mesh>
       </group>
     </group>
   );
