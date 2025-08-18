@@ -28,6 +28,8 @@ export function Poster(props) {
 
   return (
     <group {...props} dispose={null}>
+      <ambientLight intensity={1} />
+      <directionalLight position={[5, 5, 5]} intensity={2} />
       <group
         name="Scene"
         scale={0.25}

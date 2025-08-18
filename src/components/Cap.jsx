@@ -6,6 +6,8 @@ export function Cap(props) {
   const { nodes, materials } = useGLTF("/Cap.glb");
   return (
     <group {...props} dispose={null}>
+      <ambientLight intensity={1} />
+      <directionalLight position={[5, 5, 5]} intensity={2} />
       <group
         name="Scene"
         rotation={[Math.PI / 1.8, -Math.PI / 5, Math.PI / 35]}
