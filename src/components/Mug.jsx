@@ -6,7 +6,7 @@ import { ContextTool } from "./Mainstate(tool)/Mainstatetool";
 export function Mug(props) {
   const { nodes, materials } = useGLTF("/cup.glb");
   const { canvas } = useContext(ContextTool);
-
+  const texture = new THREE.CanvasTexture(canvas); // turn HTML canvas into texture
   function decreaseOpacity(hex, amount = 0.1) {
     // Ensure hex is in the format #RRGGBB
     let c = hex.replace("#", "");
@@ -59,9 +59,7 @@ export function Mug(props) {
           receiveShadow
           geometry={nodes.CupDrawArea.geometry}
           material={materials.DecalMaterial}
-        >  <meshStandardMaterial>
-    <CanvasTexture />
-  </meshStandardMaterial>
+        >  <meshStandardMaterial map={texture} />
 </mesh>
       </group>
     </group>
@@ -69,6 +67,7 @@ export function Mug(props) {
 }
 
 useGLTF.preload("/cup.glb");
+
 
 
 
