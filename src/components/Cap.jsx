@@ -21,7 +21,7 @@ export function Cap(props) {
           scale={0.025} />
         <mesh name="PlaneCanvas"  geometry={nodes.PlaneCanvas.geometry}           material={materials.MaterialCanvas}
           rotation={[-0.039, -2.501, 0.102]}
-          scale={0.025}>
+          scale={0.025}
           >  <CanvasTexture /> </mesh>
       </group>
     </group>
@@ -29,5 +29,6 @@ export function Cap(props) {
 }
 
 useGLTF.preload("/Cap.glb");
+
 
 
