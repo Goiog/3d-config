@@ -28,7 +28,7 @@ export function Poster(props) {
 
   return (
     <group {...props} dispose={null}>
-      <ambientLight intensity={1} />
+      <ambientLight intensity={1.5} />
       <directionalLight position={[5, 5, 5]} intensity={2} />
       <group
         name="Scene"
@@ -81,7 +81,7 @@ export function Poster(props) {
           rotation={[0.001, 0.008, 0.047]}
           scale={[0.009, 0.771, 0.771]}
         >
-          <CanvasTexture />
+          <meshStandardMaterial map={materials.Canvascapmaterial.map} />
         </mesh>
       </group>
     </group>
@@ -89,3 +89,4 @@ export function Poster(props) {
 }
 
 useGLTF.preload("/poster2.glb");
+
