@@ -22,7 +22,7 @@ export function Shirt(props) {
       <group
         name="Sketchfab_model"
         rotation={[Math.PI / 2, Math.PI, Math.PI]}
-        scale={[-1,-1,1]}
+        scale={[-0.95,-0.95,0.95]}
       >
         <mesh name="Object_4"  geometry={nodes.Object_4.geometry} material={materials.Tshirtmaterialinner} />
         <mesh name="Object_7"  geometry={nodes.Object_7.geometry} material={materials.Material_001} />
