@@ -80,17 +80,14 @@ export function Poster(props) {
           position={[-0.207, 1.418, 0.05]}
           rotation={[0.001, 0.008, 0.047]}
           scale={[0.009, 0.771, 0.771]}
-        >
-            <meshStandardMaterial>
-    <CanvasTexture />
-  </meshStandardMaterial>
-</mesh>
+        >  <CanvasTexture /> </mesh>
       </group>
     </group>
   );
 }
 
 useGLTF.preload("/poster2.glb");
+
 
 
 
