@@ -19,13 +19,16 @@ export function Cap(props) {
         />
         <mesh name="BaseballCap" geometry={nodes.BaseballCap.geometry} material={materials.Canvascapmaterial} rotation={[-0.039, -2.501, 0.102]}
           scale={0.025} >
-          <meshStandardMaterial map={materials.Canvascapmaterial.map} />
-        </mesh>
+            <meshStandardMaterial>
+    <CanvasTexture />
+  </meshStandardMaterial>
+</mesh>
       </group>
     </group>
   );
 }
 
 useGLTF.preload("/Cap.glb");
+
 
 
