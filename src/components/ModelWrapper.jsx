@@ -257,7 +257,7 @@ const CanvasTexture = React.memo(({ flip }) => {
   }, []);
 
   return (
-    <meshMatcapMaterial
+    <meshStandardMaterial
       polygonOffset
       // polygonOffsetFactor={10}
       transparent
@@ -275,8 +275,9 @@ const CanvasTexture = React.memo(({ flip }) => {
         magFilter={THREE.LinearFilter}
         mapping={THREE.EquirectangularReflectionMapping}
       />
-    </meshMatcapMaterial>
+    </meshStandardMaterial>
   );
 });
 
 export { CanvasTexture };
+
