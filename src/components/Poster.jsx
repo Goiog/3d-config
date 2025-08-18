@@ -71,6 +71,7 @@ export function Poster(props) {
           </mesh>
         <mesh name="EscudoRayo"  geometry={nodes.EscudoRayo.geometry} material={materials.Escudo}
           scale={[0.1,1,1]}
+          position={[-0.15,0,0]}
         />
         <mesh name="Cube005" geometry={nodes.Cube005.geometry} material={materials.Glass_Simple}
         >  <CanvasTexture /> </mesh>
@@ -80,6 +81,7 @@ export function Poster(props) {
 }
 
 useGLTF.preload("/poster2.glb");
+
 
 
 
