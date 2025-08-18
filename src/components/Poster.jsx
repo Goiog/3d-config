@@ -54,22 +54,15 @@ export function Poster(props) {
           />
         </mesh>
         <mesh
-          name="Plane006"
+          name="Plane"
           castShadow
           receiveShadow
-          geometry={nodes.Plane006.geometry}
-          material={materials["Material.003"]}
+          geometry={nodes.Plane.geometry}
+          material={materials["Escudo"]}
           position={[-0.212, 1.447, 0.072]}
           rotation={[0.001, 0.008, 1.618]}
           scale={0.771}
         >
-          <meshStandardMaterial
-            color={
-              canvas.backgroundColor === "#ffffff"
-                ? "#f5f5f5"
-                : decreaseOpacity(canvas.backgroundColor, 0.5)
-            }
-          />
         </mesh>
         <mesh
           name="Cube004"
@@ -87,6 +80,7 @@ export function Poster(props) {
 }
 
 useGLTF.preload("/poster2.glb");
+
 
 
 
