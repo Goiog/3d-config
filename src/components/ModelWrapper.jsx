@@ -202,38 +202,27 @@ const ModelWrapper = ({ Model, cameraRef, orbitRef }) => {
     // Function to capture and send the current canvas as PNG
     // Function to capture and send the current canvas as PNG
     const sendSnapshot = () => {
-      try {
-        // Get the raw canvas element
-        const el = canvas.getElement();
+      const el = canvas.getElement();
     
-        // --- Define crop box for the Mug design area ---
-        // Adjust these numbers once and your preview will match the real wrap
-        const cropX = 12;     // left offset
-        const cropY = 0;      // top offset
-        const cropWidth = 806;  // width of mug draw area
-        const cropHeight = 823; // height of mug draw area
+      // Crop box (currently guessing centered square → tweak if needed)
+      const cropX = 12;
+      const cropY = 0;
+      const cropW = 806;
+      const cropH = 812; // pick the band that covers the mug’s wrap
     
-        // Create a temporary canvas to draw the cropped region
-        const tmp = document.createElement("canvas");
-        tmp.width = cropWidth;
-        tmp.height = cropHeight;
-        const ctx = tmp.getContext("2d");
+      // Target aspect ratio (5:2)
+      const targetW = 500;
+      const targetH = 200;
     
-        ctx.drawImage(
-          el,
-          cropX, cropY, cropWidth, cropHeight,  // source rect
-          0, 0, cropWidth, cropHeight           // destination rect
-        );
+      const tmp = document.createElement("canvas");
+      tmp.width = targetW;
+      tmp.height = targetH;
+      const ctx = tmp.getContext("2d");
     
-        const url = tmp.toDataURL("image/png");
+      ctx.drawImage(el, cropX, cropY, cropW, cropH, 0, 0, targetW, targetH);
     
-        window.parent.postMessage(
-          { type: "canvas-snapshot", payload: { url } },
-          "*" // 🔒 replace with your parent domain if you want
-        );
-      } catch (err) {
-        console.error("Snapshot failed:", err);
-      }
+      const url = tmp.toDataURL("image/png");
+      window.parent.postMessage({ type: "canvas-snapshot", payload: { url } }, "*");
     };
 
   
@@ -366,6 +355,7 @@ const CanvasTexture = React.memo(({ flip }) => {
 });
 
 export { CanvasTexture };
+
 
 
 
