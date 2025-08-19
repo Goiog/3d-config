@@ -21,7 +21,27 @@ const ModelWrapper = ({ Model, cameraRef, orbitRef }) => {
     var mouse = new THREE.Vector2();
     var onClickPosition = new THREE.Vector2();
     const container = document.querySelector("#cont");
+    
 
+
+
+
+
+    fabric.Image.fromURL(url, function(img) {
+      img.set({
+        left: 100,
+        top: 100,
+        scaleX: 0.5,
+        scaleY: 0.5,
+        selectable: true,     // allow selecting
+        hasControls: true,    // show resize handles
+        lockRotation: false,  // allow rotation if you want
+      });
+      canvas.add(img);
+    });
+
+
+    
     fabric.Canvas.prototype.getPointer = function (e, ignoreZoom) {
       if (this._absolutePointer && !ignoreZoom) {
         return this._absolutePointer;
@@ -368,6 +388,7 @@ const CanvasTexture = React.memo(({ flip }) => {
 });
 
 export { CanvasTexture };
+
 
 
 
