@@ -196,63 +196,71 @@ const ModelWrapper = ({ Model, cameraRef, orbitRef }) => {
 
 
   
-  useEffect(() => {
-    if (!canvas) return;
-  
-    // Function to capture and send the current canvas as PNG
-    // Function to capture and send the current canvas as PNG
-    const sendSnapshot = () => {
-      const el = canvas.getElement();
-    
-      // Crop box (currently guessing centered square → tweak if needed)
-      const cropX = 12;
-      const cropY = 0;
-      const cropW = 806;
-      const cropH = 812; // pick the band that covers the mug’s wrap
-    
-      // Target aspect ratio (5:2)
-      const targetW = 500;
-      const targetH = 200;
-    
-      const tmp = document.createElement("canvas");
-      tmp.width = targetW;
-      tmp.height = targetH;
-      const ctx = tmp.getContext("2d");
-    
-      ctx.drawImage(el, cropX, cropY, cropW, cropH, 0, 0, targetW, targetH);
-    
-      const url = tmp.toDataURL("image/png");
-      window.parent.postMessage({ type: "canvas-snapshot", payload: { url } }, "*");
-    };
+ useEffect(() => {
+  if (!canvas) return;
 
-  
-    // --- Auto-push on fabric events ---
-    canvas.on("object:added", sendSnapshot);
-    canvas.on("object:modified", sendSnapshot);
-    canvas.on("object:removed", sendSnapshot);
-    canvas.on("selection:cleared", sendSnapshot);
-    canvas.on("selection:updated", sendSnapshot);
-  
-    // --- Respond to parent requests ---
-    const onMessage = (event) => {
-      const data = event.data || {};
-      if (data.type === "request-canvas-snapshot") {
-        sendSnapshot();
-      }
-    };
-    window.addEventListener("message", onMessage);
-  
-    // Cleanup on unmount
-    return () => {
-      canvas.off("object:added", sendSnapshot);
-      canvas.off("object:modified", sendSnapshot);
-      canvas.off("object:removed", sendSnapshot);
-      canvas.off("selection:cleared", sendSnapshot);
-      canvas.off("selection:updated", sendSnapshot);
-      window.removeEventListener("message", onMessage);
-    };
-    canvas.setBackgroundColor('#ffffff', canvas.renderAll.bind(canvas));
-  }, [canvas]);
+  // Give the canvas a white background right away
+  canvas.setBackgroundColor('#ffffff', canvas.renderAll.bind(canvas));
+
+  // Function to capture and send the current canvas as PNG
+  const sendSnapshot = () => {
+    const el = canvas.getElement();
+
+    // Crop box (your current Mug wrap area guess)
+    const cropX = 12;
+    const cropY = 0;
+    const cropW = 806;
+    const cropH = 812;
+
+    // Target aspect ratio (5:2)
+    const targetW = 500;
+    const targetH = 200;
+
+    const tmp = document.createElement("canvas");
+    tmp.width = targetW;
+    tmp.height = targetH;
+    const ctx = tmp.getContext("2d");
+
+    // Fill background to avoid “broken image” effect
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, targetW, targetH);
+
+    // Draw the fabric canvas content into your 500x200 preview
+    ctx.drawImage(el, cropX, cropY, cropW, cropH, 0, 0, targetW, targetH);
+
+    const url = tmp.toDataURL("image/png");
+    window.parent.postMessage({ type: "canvas-snapshot", payload: { url } }, "*");
+  };
+
+  // Auto-push on fabric events
+  canvas.on("object:added", sendSnapshot);
+  canvas.on("object:modified", sendSnapshot);
+  canvas.on("object:removed", sendSnapshot);
+  canvas.on("selection:cleared", sendSnapshot);
+  canvas.on("selection:updated", sendSnapshot);
+
+  // Respond to parent requests
+  const onMessage = (event) => {
+    const data = event.data || {};
+    if (data.type === "request-canvas-snapshot") {
+      sendSnapshot();
+    }
+  };
+  window.addEventListener("message", onMessage);
+
+  // Send one snapshot immediately on init (blank 500x200 with white background)
+  sendSnapshot();
+
+  // Cleanup on unmount
+  return () => {
+    canvas.off("object:added", sendSnapshot);
+    canvas.off("object:modified", sendSnapshot);
+    canvas.off("object:removed", sendSnapshot);
+    canvas.off("selection:cleared", sendSnapshot);
+    canvas.off("selection:updated", sendSnapshot);
+    window.removeEventListener("message", onMessage);
+  };
+}, [canvas]);
 
 
 
@@ -356,6 +364,7 @@ const CanvasTexture = React.memo(({ flip }) => {
 });
 
 export { CanvasTexture };
+
 
 
 
