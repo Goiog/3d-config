@@ -251,6 +251,7 @@ const ModelWrapper = ({ Model, cameraRef, orbitRef }) => {
       canvas.off("selection:updated", sendSnapshot);
       window.removeEventListener("message", onMessage);
     };
+    canvas.setBackgroundColor('#ffffff', canvas.renderAll.bind(canvas));
   }, [canvas]);
 
 
@@ -355,6 +356,7 @@ const CanvasTexture = React.memo(({ flip }) => {
 });
 
 export { CanvasTexture };
+
 
 
 
