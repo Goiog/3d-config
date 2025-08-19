@@ -207,11 +207,14 @@ const ModelWrapper = ({ Model, cameraRef, orbitRef }) => {
     const el = canvas.getElement();
 
     // Crop box (your current Mug wrap area guess)
+    //const cropX = 12;
+    //const cropY = 0;
+    //const cropW = 806;
+    //const cropH = 812;
     const cropX = 12;
     const cropY = 0;
-    const cropW = 806;
-    const cropH = 812;
-
+    const cropW = 1000;
+    const cropH = 1000;
     // Target aspect ratio (8:4)
     const targetW = 800;
     const targetH = 400;
@@ -365,6 +368,7 @@ const CanvasTexture = React.memo(({ flip }) => {
 });
 
 export { CanvasTexture };
+
 
 
 
