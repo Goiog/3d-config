@@ -212,9 +212,9 @@ const ModelWrapper = ({ Model, cameraRef, orbitRef }) => {
     const cropW = 806;
     const cropH = 812;
 
-    // Target aspect ratio (5:2)
-    const targetW = 500;
-    const targetH = 200;
+    // Target aspect ratio (8:4)
+    const targetW = 800;
+    const targetH = 400;
 
     const tmp = document.createElement("canvas");
     tmp.width = targetW;
@@ -365,6 +365,7 @@ const CanvasTexture = React.memo(({ flip }) => {
 });
 
 export { CanvasTexture };
+
 
 
 
