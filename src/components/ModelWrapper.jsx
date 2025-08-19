@@ -200,17 +200,42 @@ const ModelWrapper = ({ Model, cameraRef, orbitRef }) => {
     if (!canvas) return;
   
     // Function to capture and send the current canvas as PNG
+    // Function to capture and send the current canvas as PNG
     const sendSnapshot = () => {
       try {
-        const url = canvas.toDataURL({ format: "png" });
+        // Get the raw canvas element
+        const el = canvas.getElement();
+    
+        // --- Define crop box for the Mug design area ---
+        // Adjust these numbers once and your preview will match the real wrap
+        const cropX = 12;     // left offset
+        const cropY = 0;      // top offset
+        const cropWidth = 806;  // width of mug draw area
+        const cropHeight = 823; // height of mug draw area
+    
+        // Create a temporary canvas to draw the cropped region
+        const tmp = document.createElement("canvas");
+        tmp.width = cropWidth;
+        tmp.height = cropHeight;
+        const ctx = tmp.getContext("2d");
+    
+        ctx.drawImage(
+          el,
+          cropX, cropY, cropWidth, cropHeight,  // source rect
+          0, 0, cropWidth, cropHeight           // destination rect
+        );
+    
+        const url = tmp.toDataURL("image/png");
+    
         window.parent.postMessage(
           { type: "canvas-snapshot", payload: { url } },
-          "*" // 🔒 you can replace "*" with your parent domain for security
+          "*" // 🔒 replace with your parent domain if you want
         );
       } catch (err) {
         console.error("Snapshot failed:", err);
       }
     };
+
   
     // --- Auto-push on fabric events ---
     canvas.on("object:added", sendSnapshot);
@@ -341,6 +366,7 @@ const CanvasTexture = React.memo(({ flip }) => {
 });
 
 export { CanvasTexture };
+
 
 
 
