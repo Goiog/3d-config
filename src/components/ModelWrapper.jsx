@@ -192,18 +192,11 @@ const ModelWrapper = ({ Model, cameraRef, orbitRef }) => {
     return () => container.removeEventListener("mousedown", onMouseEvt, false);
   }, [canvasOffset]);
 
-  return (
-    <>
-      <Model cameraRef={cameraRef} canvas={canvas} />
-    </>
-  );
-};
 
 
 
-
-
-useEffect(() => {
+  
+  useEffect(() => {
   if (!canvas) return;
 
   // Function to capture and send the current canvas as PNG
@@ -245,6 +238,23 @@ useEffect(() => {
     window.removeEventListener("message", onMessage);
   };
 }, [canvas]);
+
+
+
+  
+
+  return (
+    <>
+      <Model cameraRef={cameraRef} canvas={canvas} />
+    </>
+  );
+};
+
+
+
+
+
+
 
 
 
@@ -331,6 +341,7 @@ const CanvasTexture = React.memo(({ flip }) => {
 });
 
 export { CanvasTexture };
+
 
 
 
