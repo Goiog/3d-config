@@ -10,7 +10,7 @@ export function Cap(props) {
       <directionalLight position={[5, 5, 5]} intensity={2} />
       <group
         name="Scene"
-        rotation={[Math.PI / 1.8, -Math.PI / 5, Math.PI / 35]}
+        rotation={[Math.PI / 1.8, -Math.PI / 5+ Math.PI, Math.PI / 35]}
         scale={1.4}
       >
         <mesh name="Plane"  geometry={nodes.Plane.geometry}           material={materials.Material}
@@ -29,6 +29,7 @@ export function Cap(props) {
 }
 
 useGLTF.preload("/Cap.glb");
+
 
 
 
