@@ -239,29 +239,7 @@ const ModelWrapper = ({ Model, cameraRef, orbitRef }) => {
   canvas.on("selection:cleared", sendSnapshot);
   canvas.on("selection:updated", sendSnapshot);
   
-   reader.onload = (event) => {
-  const imageUrl = event.target.result;
-  const id = crypto.randomUUID();
-
-  Images.push({ _id: id, width: 500, height: 500, top: 20, left: 20, url: imageUrl });
-
-  // --- add to parent Fabric canvas ---
-  fabric.Image.fromURL(imageUrl, (img) => {
-    img.set({
-      left: 20,
-      top: 20,
-      scaleX: 0.5,
-      scaleY: 0.5,
-      selectable: true,
-      _id: id // custom property to identify it
-    });
-    parentCanvas.add(img).setActiveObject(img);
-  });
-
-  // --- add to 3D model (iframe) ---
-  CreateImageLayer(imageUrl, id);
-  postToIframe({ type: "add-image", payload: { url: imageUrl, _id: id } });
-};
+   
   // Respond to parent requests
   const onMessage = (event) => {
     const data = event.data || {};
@@ -387,6 +365,7 @@ const CanvasTexture = React.memo(({ flip }) => {
 });
 
 export { CanvasTexture };
+
 
 
 
