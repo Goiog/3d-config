@@ -28,7 +28,7 @@ export function Mug(props) {
   return (
     <group {...props} dispose={null}>
       <ambientLight intensity={1.5} />
-      <directionalLight position={[5, 5, 5]} intensity={2} />
+      <directionalLight position={[-5, -5, -5]} intensity={2} />
       <group
         name="Scene"
         scale={0.16}
@@ -65,6 +65,7 @@ export function Mug(props) {
 }
 
 useGLTF.preload("/cup.glb");
+
 
 
 
