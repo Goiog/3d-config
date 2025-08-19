@@ -197,47 +197,47 @@ const ModelWrapper = ({ Model, cameraRef, orbitRef }) => {
 
   
   useEffect(() => {
-  if (!canvas) return;
-
-  // Function to capture and send the current canvas as PNG
-  const sendSnapshot = () => {
-    try {
-      const url = canvas.toDataURL({ format: "png" });
-      window.parent.postMessage(
-        { type: "canvas-snapshot", payload: { url } },
-        "*" // 🔒 you can replace "*" with your parent domain for security
-      );
-    } catch (err) {
-      console.error("Snapshot failed:", err);
-    }
-  };
-
-  // --- Auto-push on fabric events ---
-  canvas.on("object:added", sendSnapshot);
-  canvas.on("object:modified", sendSnapshot);
-  canvas.on("object:removed", sendSnapshot);
-  canvas.on("selection:cleared", sendSnapshot);
-  canvas.on("selection:updated", sendSnapshot);
-
-  // --- Respond to parent requests ---
-  const onMessage = (event) => {
-    const data = event.data || {};
-    if (data.type === "request-canvas-snapshot") {
-      sendSnapshot();
-    }
-  };
-  window.addEventListener("message", onMessage);
-
-  // Cleanup on unmount
-  return () => {
-    canvas.off("object:added", sendSnapshot);
-    canvas.off("object:modified", sendSnapshot);
-    canvas.off("object:removed", sendSnapshot);
-    canvas.off("selection:cleared", sendSnapshot);
-    canvas.off("selection:updated", sendSnapshot);
-    window.removeEventListener("message", onMessage);
-  };
-}, [canvas]);
+    if (!canvas) return;
+  
+    // Function to capture and send the current canvas as PNG
+    const sendSnapshot = () => {
+      try {
+        const url = canvas.toDataURL({ format: "png" });
+        window.parent.postMessage(
+          { type: "canvas-snapshot", payload: { url } },
+          "*" // 🔒 you can replace "*" with your parent domain for security
+        );
+      } catch (err) {
+        console.error("Snapshot failed:", err);
+      }
+    };
+  
+    // --- Auto-push on fabric events ---
+    canvas.on("object:added", sendSnapshot);
+    canvas.on("object:modified", sendSnapshot);
+    canvas.on("object:removed", sendSnapshot);
+    canvas.on("selection:cleared", sendSnapshot);
+    canvas.on("selection:updated", sendSnapshot);
+  
+    // --- Respond to parent requests ---
+    const onMessage = (event) => {
+      const data = event.data || {};
+      if (data.type === "request-canvas-snapshot") {
+        sendSnapshot();
+      }
+    };
+    window.addEventListener("message", onMessage);
+  
+    // Cleanup on unmount
+    return () => {
+      canvas.off("object:added", sendSnapshot);
+      canvas.off("object:modified", sendSnapshot);
+      canvas.off("object:removed", sendSnapshot);
+      canvas.off("selection:cleared", sendSnapshot);
+      canvas.off("selection:updated", sendSnapshot);
+      window.removeEventListener("message", onMessage);
+    };
+  }, [canvas]);
 
 
 
@@ -341,6 +341,7 @@ const CanvasTexture = React.memo(({ flip }) => {
 });
 
 export { CanvasTexture };
+
 
 
 
