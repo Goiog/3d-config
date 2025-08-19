@@ -261,7 +261,52 @@ const ModelWrapper = ({ Model, cameraRef, orbitRef }) => {
   canvas.on("object:removed", sendSnapshot);
   canvas.on("selection:cleared", sendSnapshot);
   canvas.on("selection:updated", sendSnapshot);
-  
+
+  const onChange = (e) => {
+    const obj = e.target;
+    if (!obj) return;
+
+    // Send update to 3D model (via iframe or postMessage)
+    window.parent.postMessage({
+      type: "update-image",
+      payload: {
+        _id: obj._id,              // track which layer
+        left: obj.left,
+        top: obj.top,
+        scale: obj.scaleX * 500,   // scale normalized for your system
+        angle: obj.angle || 0,
+      },
+    }, "*");
+  };
+
+  canvas.on("object:moving", onChange);
+  canvas.on("object:scaling", onChange);
+  canvas.on("object:rotating", onChange);
+  canvas.on("object:modified", onChange);
+  canvas.on("mouse:wheel", function(opt) {
+    let delta = opt.e.deltaY;
+    let zoom = canvas.getZoom();
+    zoom *= 0.999 ** delta;
+    if (zoom > 5) zoom = 5;
+    if (zoom < 0.5) zoom = 0.5;
+    canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
+    opt.e.preventDefault();
+    opt.e.stopPropagation();
+  });
+  return () => {
+    canvas.off("object:moving", onChange);
+    canvas.off("object:scaling", onChange);
+    canvas.off("object:rotating", onChange);
+    canvas.off("object:modified", onChange);
+  };
+
+
+
+
+
+
+
+   
    
   // Respond to parent requests
   const onMessage = (event) => {
@@ -388,6 +433,7 @@ const CanvasTexture = React.memo(({ flip }) => {
 });
 
 export { CanvasTexture };
+
 
 
 
