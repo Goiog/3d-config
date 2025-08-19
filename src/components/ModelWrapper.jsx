@@ -199,7 +199,9 @@ const ModelWrapper = ({ Model, cameraRef, orbitRef }) => {
   );
 };
 
-export default ModelWrapper;
+
+
+
 
 useEffect(() => {
   if (!canvas) return;
@@ -243,6 +245,12 @@ useEffect(() => {
     window.removeEventListener("message", onMessage);
   };
 }, [canvas]);
+
+
+
+
+
+export default ModelWrapper;
 // Till here
 const CanvasTexture = React.memo(({ flip }) => {
   const { canvas, update, unsportedDevice, selectedModel } =
@@ -323,6 +331,7 @@ const CanvasTexture = React.memo(({ flip }) => {
 });
 
 export { CanvasTexture };
+
 
 
 
