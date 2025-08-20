@@ -21,8 +21,8 @@ const ModelWrapper = ({ Model, cameraRef, orbitRef }) => {
     var mouse = new THREE.Vector2();
     var onClickPosition = new THREE.Vector2();
     const container = document.querySelector("#cont");
-    
-    
+
+
     fabric.Canvas.prototype.getPointer = function (e, ignoreZoom) {
       if (this._absolutePointer && !ignoreZoom) {
         return this._absolutePointer;
@@ -177,17 +177,12 @@ const ModelWrapper = ({ Model, cameraRef, orbitRef }) => {
       let CORRECTION_VALUE = axis === "x" ? 4.5 : 5.5;
 
 
-      
       function getRealPosition(axis, value) {
         const container = document.querySelector("#cont");
         if (!container) return 0;
         const rect = container.getBoundingClientRect();
         return Math.round(value * (axis === "x" ? rect.width : rect.height));
       }
-
-
-
-      
     }
 
     var getMousePosition = function (dom, x, y) {
@@ -207,79 +202,140 @@ const ModelWrapper = ({ Model, cameraRef, orbitRef }) => {
 
 
 
-  
- useEffect(() => {
-  if (!canvas) return;
+  useEffect(() => {
+    if (!canvas) return;
 
-  // Give the canvas a white background right away
-  canvas.setBackgroundColor('#ffffff', canvas.renderAll.bind(canvas));
+    // Give the canvas a white background right away
+    canvas.setBackgroundColor('#ffffff', canvas.renderAll.bind(canvas));
 
-  // Function to capture and send the current canvas as PNG
-  const sendSnapshot = () => {
-    const el = canvas.getElement();
+    // Performance optimization: Track drag state and throttle snapshots
+    let isDragging = false;
+    let pendingSnapshot = false;
+    let lastSnapshotTime = 0;
+    const SNAPSHOT_THROTTLE_MS = 16; // ~60fps max
+    const DRAG_SNAPSHOT_THROTTLE_MS = 100; // 10fps during drag for better performance
 
-    // Crop box (your current Mug wrap area guess)
-    //const cropX = 12;
-    //const cropY = 0;
-    //const cropW = 806;
-    //const cropH = 812;
-    const cropX = 0;
-    const cropY = 0;
-    const cropW = 900;
-    const cropH = 900;
-    // Target aspect ratio (8:4)
-    const targetW = 800;
-    const targetH = 400;
+    // Function to capture and send the current canvas as PNG
+    const sendSnapshot = (immediate = false) => {
+      const now = Date.now();
+      const throttleMs = isDragging ? DRAG_SNAPSHOT_THROTTLE_MS : SNAPSHOT_THROTTLE_MS;
 
-    const tmp = document.createElement("canvas");
-    tmp.width = targetW;
-    tmp.height = targetH;
-    const ctx = tmp.getContext("2d");
+      // Throttle snapshots to prevent overwhelming the parent
+      if (!immediate && (now - lastSnapshotTime) < throttleMs) {
+        if (!pendingSnapshot) {
+          pendingSnapshot = true;
+          setTimeout(() => {
+            pendingSnapshot = false;
+            sendSnapshot(true);
+          }, throttleMs - (now - lastSnapshotTime));
+        }
+        return;
+      }
 
-    // Fill background to avoid “broken image” effect
-    ctx.fillStyle = "#ffffff";
-    ctx.fillRect(0, 0, targetW, targetH);
+      lastSnapshotTime = now;
 
-    // Draw the fabric canvas content into your 500x200 preview
-    ctx.drawImage(el, cropX, cropY, cropW, cropH, 0, 0, targetW, targetH);
+      const el = canvas.getElement();
 
-    const url = tmp.toDataURL("image/png");
-    window.parent.postMessage({ type: "canvas-snapshot", payload: { url } }, "*");
-  };
+      // Crop box (your current Mug wrap area guess)
+      const cropX = 0;
+      const cropY = 0;
+      const cropW = 900;
+      const cropH = 900;
+      // Target aspect ratio (8:4)
+      const targetW = 800;
+      const targetH = 400;
 
-  // Auto-push on fabric events
-  canvas.on("object:added", sendSnapshot);
-  canvas.on("object:modified", sendSnapshot);
-  canvas.on("object:removed", sendSnapshot);
-  canvas.on("selection:cleared", sendSnapshot);
-  canvas.on("selection:updated", sendSnapshot);
-   
-  // Respond to parent requests
-  const onMessage = (event) => {
-    const data = event.data || {};
-    if (data.type === "request-canvas-snapshot") {
+      const tmp = document.createElement("canvas");
+      tmp.width = targetW;
+      tmp.height = targetH;
+      const ctx = tmp.getContext("2d");
+
+      // Fill background to avoid "broken image" effect
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, targetW, targetH);
+
+      // Draw the fabric canvas content into your preview
+      ctx.drawImage(el, cropX, cropY, cropW, cropH, 0, 0, targetW, targetH);
+
+      const url = tmp.toDataURL("image/png");
+      window.parent.postMessage({ type: "canvas-snapshot", payload: { url } }, "*");
+    };
+
+    // Optimized event handlers with drag detection
+    const handleObjectMoving = () => {
+      isDragging = true;
       sendSnapshot();
-    }
-  };
-  window.addEventListener("message", onMessage);
+    };
 
-  // Send one snapshot immediately on init (blank 500x200 with white background)
-  sendSnapshot();
+    const handleObjectModified = () => {
+      isDragging = false;
+      sendSnapshot(true); // Send final snapshot immediately when drag ends
+    };
 
-  // Cleanup on unmount
-  return () => {
-    canvas.off("object:added", sendSnapshot);
-    canvas.off("object:modified", sendSnapshot);
-    canvas.off("object:removed", sendSnapshot);
-    canvas.off("selection:cleared", sendSnapshot);
-    canvas.off("selection:updated", sendSnapshot);
-    window.removeEventListener("message", onMessage);
-  };
-}, [canvas]);
+    const handleObjectScaling = () => {
+      sendSnapshot();
+    };
+
+    const handleObjectRotating = () => {
+      sendSnapshot();
+    };
+
+    // Immediate snapshot events (no throttling needed)
+    const handleObjectAdded = () => {
+      sendSnapshot(true);
+    };
+
+    const handleObjectRemoved = () => {
+      sendSnapshot(true);
+    };
+
+    const handleSelectionCleared = () => {
+      sendSnapshot(true);
+    };
+
+    const handleSelectionUpdated = () => {
+      sendSnapshot(true);
+    };
+
+    // Bind optimized event handlers
+    canvas.on("object:moving", handleObjectMoving);
+    canvas.on("object:modified", handleObjectModified);
+    canvas.on("object:scaling", handleObjectScaling);
+    canvas.on("object:rotating", handleObjectRotating);
+    canvas.on("object:added", handleObjectAdded);
+    canvas.on("object:removed", handleObjectRemoved);
+    canvas.on("selection:cleared", handleSelectionCleared);
+    canvas.on("selection:updated", handleSelectionUpdated);
+
+    // Respond to parent requests
+    const onMessage = (event) => {
+      const data = event.data || {};
+      if (data.type === "request-canvas-snapshot") {
+        sendSnapshot(true);
+      }
+    };
+    window.addEventListener("message", onMessage);
+
+    // Send one snapshot immediately on init (blank with white background)
+    sendSnapshot(true);
+
+    // Cleanup on unmount
+    return () => {
+      canvas.off("object:moving", handleObjectMoving);
+      canvas.off("object:modified", handleObjectModified);
+      canvas.off("object:scaling", handleObjectScaling);
+      canvas.off("object:rotating", handleObjectRotating);
+      canvas.off("object:added", handleObjectAdded);
+      canvas.off("object:removed", handleObjectRemoved);
+      canvas.off("selection:cleared", handleSelectionCleared);
+      canvas.off("selection:updated", handleSelectionUpdated);
+      window.removeEventListener("message", onMessage);
+    };
+  }, [canvas]);
 
 
 
-  
+
 
   return (
     <>
@@ -287,6 +343,7 @@ const ModelWrapper = ({ Model, cameraRef, orbitRef }) => {
     </>
   );
 };
+
 
 
 
@@ -379,30 +436,3 @@ const CanvasTexture = React.memo(({ flip }) => {
 });
 
 export { CanvasTexture };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
