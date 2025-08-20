@@ -15,13 +15,13 @@ const ModelWrapper = ({ Model, cameraRef, orbitRef }) => {
   const { canvas, canvasOffset, update, unsportedDevice, selectedModel } =
     useContext(ContextTool);
   const { scene, camera } = useThree();
+  const canvasTextureRef = useRef();
 
   useEffect(() => {
     var raycaster = new THREE.Raycaster();
     var mouse = new THREE.Vector2();
     var onClickPosition = new THREE.Vector2();
     const container = document.querySelector("#cont");
-
 
     fabric.Canvas.prototype.getPointer = function (e, ignoreZoom) {
       if (this._absolutePointer && !ignoreZoom) {
@@ -174,15 +174,10 @@ const ModelWrapper = ({ Model, cameraRef, orbitRef }) => {
     }
 
     function getRealPosition(axis, value) {
-      let CORRECTION_VALUE = axis === "x" ? 4.5 : 5.5;
-
-
-      function getRealPosition(axis, value) {
-        const container = document.querySelector("#cont");
-        if (!container) return 0;
-        const rect = container.getBoundingClientRect();
-        return Math.round(value * (axis === "x" ? rect.width : rect.height));
-      }
+      const container = document.querySelector("#cont");
+      if (!container) return 0;
+      const rect = container.getBoundingClientRect();
+      return Math.round(value * (axis === "x" ? rect.width : rect.height));
     }
 
     var getMousePosition = function (dom, x, y) {
@@ -199,164 +194,62 @@ const ModelWrapper = ({ Model, cameraRef, orbitRef }) => {
     return () => container.removeEventListener("mousedown", onMouseEvt, false);
   }, [canvasOffset]);
 
-
-
-
+  // Create CanvasTexture from Fabric canvas
   useEffect(() => {
     if (!canvas) return;
 
     // Give the canvas a white background right away
     canvas.setBackgroundColor('#ffffff', canvas.renderAll.bind(canvas));
 
-    // Function to send transform data for real-time updates
-    const sendTransform = (object) => {
-      if (!object) return;
-      
-      const transform = {
-        left: object.left || 0,
-        top: object.top || 0,
-        angle: object.angle || 0,
-        scaleX: object.scaleX || 1,
-        scaleY: object.scaleY || 1
-      };
-      
-      window.parent.postMessage({ 
-        type: "canvas-transform", 
-        payload: transform 
-      }, "*");
-    };
+    // Create the CanvasTexture directly from the Fabric canvas element
+    const fabricEl = canvas.getElement();
+    const texture = new THREE.CanvasTexture(fabricEl);
+    texture.needsUpdate = true;
+    texture.flipY = false;
+    texture.generateMipmaps = false;
+    texture.anisotropy = 16;
+    texture.minFilter = THREE.LinearFilter;
+    texture.magFilter = THREE.LinearFilter;
 
-    // Function to capture and send final PNG snapshot
-    const sendSnapshot = () => {
-      const el = canvas.getElement();
+    canvasTextureRef.current = texture;
 
-      // Crop box (your current Mug wrap area guess)
-      const cropX = 0;
-      const cropY = 0;
-      const cropW = 900;
-      const cropH = 900;
-      // Target aspect ratio (8:4)
-      const targetW = 800;
-      const targetH = 400;
-
-      const tmp = document.createElement("canvas");
-      tmp.width = targetW;
-      tmp.height = targetH;
-      const ctx = tmp.getContext("2d");
-
-      // Fill background to avoid "broken image" effect
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0, 0, targetW, targetH);
-
-      // Draw the fabric canvas content into your preview
-      ctx.drawImage(el, cropX, cropY, cropW, cropH, 0, 0, targetW, targetH);
-
-      const url = tmp.toDataURL("image/png");
-      window.parent.postMessage({ type: "canvas-snapshot", payload: { url } }, "*");
-    };
-
-    // Real-time transform event handlers
-    const handleObjectMoving = (event) => {
-      sendTransform(event.target);
-    };
-
-    const handleObjectScaling = (event) => {
-      sendTransform(event.target);
-    };
-
-    const handleObjectRotating = (event) => {
-      sendTransform(event.target);
-    };
-
-    // Final snapshot on drop/modification
-    const handleObjectModified = () => {
-      sendSnapshot();
-    };
-
-    // Immediate snapshot events for adding/removing objects
-    const handleObjectAdded = () => {
-      sendSnapshot();
-    };
-
-    const handleObjectRemoved = () => {
-      sendSnapshot();
-    };
-
-    const handleSelectionCleared = () => {
-      sendSnapshot();
-    };
-
-    const handleSelectionUpdated = () => {
-      sendSnapshot();
-    };
-
-    // Bind event handlers
-    canvas.on("object:moving", handleObjectMoving);
-    canvas.on("object:scaling", handleObjectScaling);
-    canvas.on("object:rotating", handleObjectRotating);
-    canvas.on("object:modified", handleObjectModified);
-    canvas.on("object:added", handleObjectAdded);
-    canvas.on("object:removed", handleObjectRemoved);
-    canvas.on("selection:cleared", handleSelectionCleared);
-    canvas.on("selection:updated", handleSelectionUpdated);
-
-    // Respond to parent requests
-    const onMessage = (event) => {
-      const data = event.data || {};
-      if (data.type === "request-canvas-snapshot") {
-        sendSnapshot();
-      }
-    };
-    window.addEventListener("message", onMessage);
-
-    // Send one snapshot immediately on init (blank with white background)
-    sendSnapshot();
+    // Send the texture to parent for 3D model application
+    window.parent.postMessage({
+      type: "canvas-texture-ready",
+      payload: { textureId: "canvas-texture" }
+    }, "*");
 
     // Cleanup on unmount
     return () => {
-      canvas.off("object:moving", handleObjectMoving);
-      canvas.off("object:scaling", handleObjectScaling);
-      canvas.off("object:rotating", handleObjectRotating);
-      canvas.off("object:modified", handleObjectModified);
-      canvas.off("object:added", handleObjectAdded);
-      canvas.off("object:removed", handleObjectRemoved);
-      canvas.off("selection:cleared", handleSelectionCleared);
-      canvas.off("selection:updated", handleSelectionUpdated);
-      window.removeEventListener("message", onMessage);
+      if (canvasTextureRef.current) {
+        canvasTextureRef.current.dispose();
+      }
     };
   }, [canvas]);
 
-
-
-
+  // Real-time texture updates
+  useFrame(() => {
+    if (canvasTextureRef.current && canvas) {
+      canvasTextureRef.current.needsUpdate = true;
+      invalidate();
+    }
+  });
 
   return (
     <>
-      <Model cameraRef={cameraRef} canvas={canvas} />
+      <Model cameraRef={cameraRef} canvas={canvas} canvasTexture={canvasTextureRef.current} />
     </>
   );
 };
 
-
-
-
-
-
-
-
-
-
-
-
 export default ModelWrapper;
-// Till here
-const CanvasTexture = React.memo(({ flip }) => {
-  const { canvas, update, unsportedDevice, selectedModel } =
-    useContext(ContextTool);
+
+// CanvasTexture component for direct material application
+const CanvasTexture = React.memo(({ canvas }) => {
   const textureRef = useRef();
 
   // Use live canvas texture binding for real-time updates
-  useFrame(({ gl }) => {
+  useFrame(() => {
     if (textureRef.current && canvas) {
       textureRef.current.needsUpdate = true;
       invalidate();
