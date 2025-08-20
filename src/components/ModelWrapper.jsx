@@ -208,34 +208,13 @@ const ModelWrapper = ({ Model, cameraRef, orbitRef }) => {
     // Give the canvas a white background right away
     canvas.setBackgroundColor('#ffffff', canvas.renderAll.bind(canvas));
 
-    // Function to send transform data for real-time updates
-    const sendTransform = (object) => {
-      if (!object) return;
-      
-      const transform = {
-        left: object.left || 0,
-        top: object.top || 0,
-        angle: object.angle || 0,
-        scaleX: object.scaleX || 1,
-        scaleY: object.scaleY || 1
-      };
-      
-      window.parent.postMessage({ 
-        type: "canvas-transform", 
-        payload: transform 
-      }, "*");
-    };
-
-    // Function to capture and send final PNG snapshot
-    const sendSnapshot = () => {
+    // Send 2D preview image for the UI panel (not for 3D texture)
+    const send2DPreview = () => {
       const el = canvas.getElement();
-
-      // Crop box (your current Mug wrap area guess)
       const cropX = 0;
       const cropY = 0;
       const cropW = 900;
       const cropH = 900;
-      // Target aspect ratio (8:4)
       const targetW = 800;
       const targetH = 400;
 
@@ -244,84 +223,45 @@ const ModelWrapper = ({ Model, cameraRef, orbitRef }) => {
       tmp.height = targetH;
       const ctx = tmp.getContext("2d");
 
-      // Fill background to avoid "broken image" effect
       ctx.fillStyle = "#ffffff";
       ctx.fillRect(0, 0, targetW, targetH);
-
-      // Draw the fabric canvas content into your preview
       ctx.drawImage(el, cropX, cropY, cropW, cropH, 0, 0, targetW, targetH);
 
       const url = tmp.toDataURL("image/png");
       window.parent.postMessage({ type: "canvas-snapshot", payload: { url } }, "*");
     };
 
-    // Real-time transform event handlers
-    const handleObjectMoving = (event) => {
-      sendTransform(event.target);
+    // Handle canvas events for 2D preview updates only
+    const handleCanvasChange = () => {
+      send2DPreview();
     };
 
-    const handleObjectScaling = (event) => {
-      sendTransform(event.target);
-    };
+    // Bind event handlers for 2D preview updates
+    canvas.on("object:modified", handleCanvasChange);
+    canvas.on("object:added", handleCanvasChange);
+    canvas.on("object:removed", handleCanvasChange);
+    canvas.on("selection:cleared", handleCanvasChange);
+    canvas.on("selection:updated", handleCanvasChange);
 
-    const handleObjectRotating = (event) => {
-      sendTransform(event.target);
-    };
-
-    // Final snapshot on drop/modification
-    const handleObjectModified = () => {
-      sendSnapshot();
-    };
-
-    // Immediate snapshot events for adding/removing objects
-    const handleObjectAdded = () => {
-      sendSnapshot();
-    };
-
-    const handleObjectRemoved = () => {
-      sendSnapshot();
-    };
-
-    const handleSelectionCleared = () => {
-      sendSnapshot();
-    };
-
-    const handleSelectionUpdated = () => {
-      sendSnapshot();
-    };
-
-    // Bind event handlers
-    canvas.on("object:moving", handleObjectMoving);
-    canvas.on("object:scaling", handleObjectScaling);
-    canvas.on("object:rotating", handleObjectRotating);
-    canvas.on("object:modified", handleObjectModified);
-    canvas.on("object:added", handleObjectAdded);
-    canvas.on("object:removed", handleObjectRemoved);
-    canvas.on("selection:cleared", handleSelectionCleared);
-    canvas.on("selection:updated", handleSelectionUpdated);
-
-    // Respond to parent requests
+    // Respond to parent requests for 2D preview
     const onMessage = (event) => {
       const data = event.data || {};
       if (data.type === "request-canvas-snapshot") {
-        sendSnapshot();
+        send2DPreview();
       }
     };
     window.addEventListener("message", onMessage);
 
-    // Send one snapshot immediately on init (blank with white background)
-    sendSnapshot();
+    // Send initial 2D preview
+    send2DPreview();
 
     // Cleanup on unmount
     return () => {
-      canvas.off("object:moving", handleObjectMoving);
-      canvas.off("object:scaling", handleObjectScaling);
-      canvas.off("object:rotating", handleObjectRotating);
-      canvas.off("object:modified", handleObjectModified);
-      canvas.off("object:added", handleObjectAdded);
-      canvas.off("object:removed", handleObjectRemoved);
-      canvas.off("selection:cleared", handleSelectionCleared);
-      canvas.off("selection:updated", handleSelectionUpdated);
+      canvas.off("object:modified", handleCanvasChange);
+      canvas.off("object:added", handleCanvasChange);
+      canvas.off("object:removed", handleCanvasChange);
+      canvas.off("selection:cleared", handleCanvasChange);
+      canvas.off("selection:updated", handleCanvasChange);
       window.removeEventListener("message", onMessage);
     };
   }, [canvas]);
@@ -354,9 +294,33 @@ const CanvasTexture = React.memo(({ flip }) => {
   const { canvas, update, unsportedDevice, selectedModel } =
     useContext(ContextTool);
   const textureRef = useRef();
+  const materialRef = useRef();
 
-  // Use live canvas texture binding for real-time updates
-  useFrame(({ gl }) => {
+  // Create live canvas texture when canvas is available
+  useEffect(() => {
+    if (canvas && !textureRef.current) {
+      const fabricEl = canvas.getElement();
+      const texture = new THREE.CanvasTexture(fabricEl);
+      texture.needsUpdate = true;
+      texture.flipY = false;
+      texture.generateMipmaps = false;
+      texture.anisotropy = 16;
+      texture.minFilter = THREE.LinearFilter;
+      texture.magFilter = THREE.LinearFilter;
+      texture.mapping = THREE.EquirectangularReflectionMapping;
+      
+      textureRef.current = texture;
+      
+      // Apply texture to material
+      if (materialRef.current) {
+        materialRef.current.map = texture;
+        materialRef.current.needsUpdate = true;
+      }
+    }
+  }, [canvas]);
+
+  // Update texture every frame for real-time rendering
+  useFrame(() => {
     if (textureRef.current && canvas) {
       textureRef.current.needsUpdate = true;
       invalidate();
@@ -365,23 +329,12 @@ const CanvasTexture = React.memo(({ flip }) => {
 
   return (
     <meshStandardMaterial
+      ref={materialRef}
+      map={textureRef.current}
       polygonOffset
       transparent
       toneMapped={true}
-    >
-      <canvasTexture
-        ref={textureRef}
-        attach="map"
-        image={canvas.getElement()}
-        needsUpdate
-        flipY={false}
-        generateMipmaps={false}
-        anisotropy={16}
-        minFilter={THREE.LinearFilter}
-        magFilter={THREE.LinearFilter}
-        mapping={THREE.EquirectangularReflectionMapping}
-      />
-    </meshStandardMaterial>
+    />
   );
 });
 
