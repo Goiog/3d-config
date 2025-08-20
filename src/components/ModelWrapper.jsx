@@ -208,19 +208,19 @@ const ModelWrapper = ({ Model, cameraRef, orbitRef }) => {
     // Give the canvas a white background right away
     canvas.setBackgroundColor('#ffffff', canvas.renderAll.bind(canvas));
 
-    // Performance optimization: Track drag state and throttle snapshots
+    // Performance optimization: Track drag state with real-time snapshots
     let isDragging = false;
     let pendingSnapshot = false;
     let lastSnapshotTime = 0;
-    const SNAPSHOT_THROTTLE_MS = 16; // ~60fps max
-    const DRAG_SNAPSHOT_THROTTLE_MS = 100; // 10fps during drag for better performance
+    const SNAPSHOT_THROTTLE_MS = 16; // ~60fps max for smooth real-time updates
+    const DRAG_SNAPSHOT_THROTTLE_MS = 16; // 60fps during drag for real-time preview
 
     // Function to capture and send the current canvas as PNG
     const sendSnapshot = (immediate = false) => {
       const now = Date.now();
       const throttleMs = isDragging ? DRAG_SNAPSHOT_THROTTLE_MS : SNAPSHOT_THROTTLE_MS;
 
-      // Throttle snapshots to prevent overwhelming the parent
+      // Reduced throttling for real-time preview
       if (!immediate && (now - lastSnapshotTime) < throttleMs) {
         if (!pendingSnapshot) {
           pendingSnapshot = true;
@@ -261,10 +261,10 @@ const ModelWrapper = ({ Model, cameraRef, orbitRef }) => {
       window.parent.postMessage({ type: "canvas-snapshot", payload: { url } }, "*");
     };
 
-    // Optimized event handlers with drag detection
+    // Optimized event handlers with real-time drag detection
     const handleObjectMoving = () => {
       isDragging = true;
-      sendSnapshot();
+      sendSnapshot(true); // Send immediate snapshot for real-time feedback
     };
 
     const handleObjectModified = () => {
