@@ -7,7 +7,7 @@ export function Cap(props) {
   return (
     <group {...props} dispose={null}>
       <ambientLight intensity={1.5} />
-      <directionalLight position={[5, 5, 5]} intensity={2} />
+      <directionalLight position={[20, -20, 0]} intensity={2} />
       <group
         name="Scene"
         scale={3} rotation={[Math.PI / 2,0,0]}
@@ -26,6 +26,7 @@ export function Cap(props) {
 }
 
 useGLTF.preload("/Cap.glb");
+
 
 
 
