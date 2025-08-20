@@ -10,15 +10,14 @@ export function Cap(props) {
       <directionalLight position={[5, 5, 5]} intensity={2} />
       <group
         name="Scene"
-        rotation={[Math.PI / 1.8, -Math.PI / 5+ Math.PI, Math.PI / 35]}
-        scale={1.4}
+        scale={2}
       >
-        <mesh name="Plane"  geometry={nodes.Plane.geometry}           material={materials.Material} rotation={[0,2,0]}
+        <mesh name="Plane"  geometry={nodes.Plane.geometry}           material={materials.Material}
           scale={0.025}
         />
-        <mesh name="BaseballCap" geometry={nodes.BaseballCap.geometry} material={materials.Canvascapmaterial} rotation={[0,2,0]}
+        <mesh name="BaseballCap" geometry={nodes.BaseballCap.geometry} material={materials.Canvascapmaterial}
           scale={0.025} />
-        <mesh name="PlaneCanvas"  geometry={nodes.PlaneCanvas.geometry}           material={materials.MaterialCanvas} rotation={[0,2,0]}
+        <mesh name="PlaneCanvas"  geometry={nodes.PlaneCanvas.geometry}           material={materials.MaterialCanvas}
           scale={0.025}
           >  <CanvasTexture /> </mesh>
       </group>
@@ -27,6 +26,7 @@ export function Cap(props) {
 }
 
 useGLTF.preload("/Cap.glb");
+
 
 
 
