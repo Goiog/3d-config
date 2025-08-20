@@ -176,7 +176,18 @@ const ModelWrapper = ({ Model, cameraRef, orbitRef }) => {
     function getRealPosition(axis, value) {
       let CORRECTION_VALUE = axis === "x" ? 4.5 : 5.5;
 
-      return Math.round(value * 900);
+
+      
+      function getRealPosition(axis, value) {
+        const container = document.querySelector("#cont");
+        if (!container) return 0;
+        const rect = container.getBoundingClientRect();
+        return Math.round(value * (axis === "x" ? rect.width : rect.height));
+      }
+
+
+
+      
     }
 
     var getMousePosition = function (dom, x, y) {
@@ -368,6 +379,7 @@ const CanvasTexture = React.memo(({ flip }) => {
 });
 
 export { CanvasTexture };
+
 
 
 
