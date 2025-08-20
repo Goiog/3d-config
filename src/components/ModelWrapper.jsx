@@ -208,40 +208,72 @@ const ModelWrapper = ({ Model, cameraRef, orbitRef }) => {
     // Give the canvas a white background right away
     canvas.setBackgroundColor('#ffffff', canvas.renderAll.bind(canvas));
 
-    // Send 2D preview image for the UI panel (not for 3D texture)
-    const send2DPreview = () => {
+    // Create a shared canvas element for both 3D texture and 2D preview
+    const createSharedCanvas = () => {
       const el = canvas.getElement();
+      const sharedCanvas = document.createElement("canvas");
+      sharedCanvas.width = el.width;
+      sharedCanvas.height = el.height;
+      const ctx = sharedCanvas.getContext("2d");
+      
+      // Copy the current canvas content
+      ctx.drawImage(el, 0, 0);
+      
+      return sharedCanvas;
+    };
+
+    // Send 2D preview using the same canvas data used for 3D texture
+    const send2DPreview = () => {
+      const sharedCanvas = createSharedCanvas();
+      
+      // Create cropped version for 2D preview UI
       const cropX = 0;
       const cropY = 0;
-      const cropW = 900;
-      const cropH = 900;
+      const cropW = sharedCanvas.width;
+      const cropH = sharedCanvas.height;
       const targetW = 800;
       const targetH = 400;
 
-      const tmp = document.createElement("canvas");
-      tmp.width = targetW;
-      tmp.height = targetH;
-      const ctx = tmp.getContext("2d");
+      const previewCanvas = document.createElement("canvas");
+      previewCanvas.width = targetW;
+      previewCanvas.height = targetH;
+      const ctx = previewCanvas.getContext("2d");
 
       ctx.fillStyle = "#ffffff";
       ctx.fillRect(0, 0, targetW, targetH);
-      ctx.drawImage(el, cropX, cropY, cropW, cropH, 0, 0, targetW, targetH);
+      ctx.drawImage(sharedCanvas, cropX, cropY, cropW, cropH, 0, 0, targetW, targetH);
 
-      const url = tmp.toDataURL("image/png");
-      window.parent.postMessage({ type: "canvas-snapshot", payload: { url } }, "*");
+      const url = previewCanvas.toDataURL("image/png");
+      
+      // Send both the preview URL and the full canvas element reference
+      window.parent.postMessage({ 
+        type: "canvas-snapshot", 
+        payload: { 
+          url,
+          canvasElement: sharedCanvas // This will be the same data used for 3D texture
+        } 
+      }, "*");
     };
 
-    // Handle canvas events for 2D preview updates only
+    // Handle canvas events for synchronized updates
     const handleCanvasChange = () => {
       send2DPreview();
+      // Trigger 3D texture update immediately with same data
+      if (textureRef.current) {
+        textureRef.current.needsUpdate = true;
+        invalidate();
+      }
     };
 
-    // Bind event handlers for 2D preview updates
+    // Bind event handlers for synchronized updates
     canvas.on("object:modified", handleCanvasChange);
     canvas.on("object:added", handleCanvasChange);
     canvas.on("object:removed", handleCanvasChange);
     canvas.on("selection:cleared", handleCanvasChange);
     canvas.on("selection:updated", handleCanvasChange);
+    canvas.on("object:moving", handleCanvasChange); // Real-time during drag
+    canvas.on("object:scaling", handleCanvasChange); // Real-time during scale
+    canvas.on("object:rotating", handleCanvasChange); // Real-time during rotate
 
     // Respond to parent requests for 2D preview
     const onMessage = (event) => {
@@ -262,6 +294,9 @@ const ModelWrapper = ({ Model, cameraRef, orbitRef }) => {
       canvas.off("object:removed", handleCanvasChange);
       canvas.off("selection:cleared", handleCanvasChange);
       canvas.off("selection:updated", handleCanvasChange);
+      canvas.off("object:moving", handleCanvasChange);
+      canvas.off("object:scaling", handleCanvasChange);
+      canvas.off("object:rotating", handleCanvasChange);
       window.removeEventListener("message", onMessage);
     };
   }, [canvas]);
