@@ -208,32 +208,26 @@ const ModelWrapper = ({ Model, cameraRef, orbitRef }) => {
     // Give the canvas a white background right away
     canvas.setBackgroundColor('#ffffff', canvas.renderAll.bind(canvas));
 
-    // Performance optimization: Track drag state with real-time snapshots
-    let isDragging = false;
-    let pendingSnapshot = false;
-    let lastSnapshotTime = 0;
-    const SNAPSHOT_THROTTLE_MS = 16; // ~60fps max for smooth real-time updates
-    const DRAG_SNAPSHOT_THROTTLE_MS = 16; // 60fps during drag for real-time preview
+    // Function to send transform data for real-time updates
+    const sendTransform = (object) => {
+      if (!object) return;
+      
+      const transform = {
+        left: object.left || 0,
+        top: object.top || 0,
+        angle: object.angle || 0,
+        scaleX: object.scaleX || 1,
+        scaleY: object.scaleY || 1
+      };
+      
+      window.parent.postMessage({ 
+        type: "canvas-transform", 
+        payload: transform 
+      }, "*");
+    };
 
-    // Function to capture and send the current canvas as PNG
-    const sendSnapshot = (immediate = false) => {
-      const now = Date.now();
-      const throttleMs = isDragging ? DRAG_SNAPSHOT_THROTTLE_MS : SNAPSHOT_THROTTLE_MS;
-
-      // Reduced throttling for real-time preview
-      if (!immediate && (now - lastSnapshotTime) < throttleMs) {
-        if (!pendingSnapshot) {
-          pendingSnapshot = true;
-          setTimeout(() => {
-            pendingSnapshot = false;
-            sendSnapshot(true);
-          }, throttleMs - (now - lastSnapshotTime));
-        }
-        return;
-      }
-
-      lastSnapshotTime = now;
-
+    // Function to capture and send final PNG snapshot
+    const sendSnapshot = () => {
       const el = canvas.getElement();
 
       // Crop box (your current Mug wrap area guess)
@@ -261,47 +255,46 @@ const ModelWrapper = ({ Model, cameraRef, orbitRef }) => {
       window.parent.postMessage({ type: "canvas-snapshot", payload: { url } }, "*");
     };
 
-    // Optimized event handlers with real-time drag detection
-    const handleObjectMoving = () => {
-      isDragging = true;
-      sendSnapshot(true); // Send immediate snapshot for real-time feedback
+    // Real-time transform event handlers
+    const handleObjectMoving = (event) => {
+      sendTransform(event.target);
     };
 
+    const handleObjectScaling = (event) => {
+      sendTransform(event.target);
+    };
+
+    const handleObjectRotating = (event) => {
+      sendTransform(event.target);
+    };
+
+    // Final snapshot on drop/modification
     const handleObjectModified = () => {
-      isDragging = false;
-      sendSnapshot(true); // Send final snapshot immediately when drag ends
-    };
-
-    const handleObjectScaling = () => {
       sendSnapshot();
     };
 
-    const handleObjectRotating = () => {
-      sendSnapshot();
-    };
-
-    // Immediate snapshot events (no throttling needed)
+    // Immediate snapshot events for adding/removing objects
     const handleObjectAdded = () => {
-      sendSnapshot(true);
+      sendSnapshot();
     };
 
     const handleObjectRemoved = () => {
-      sendSnapshot(true);
+      sendSnapshot();
     };
 
     const handleSelectionCleared = () => {
-      sendSnapshot(true);
+      sendSnapshot();
     };
 
     const handleSelectionUpdated = () => {
-      sendSnapshot(true);
+      sendSnapshot();
     };
 
-    // Bind optimized event handlers
+    // Bind event handlers
     canvas.on("object:moving", handleObjectMoving);
-    canvas.on("object:modified", handleObjectModified);
     canvas.on("object:scaling", handleObjectScaling);
     canvas.on("object:rotating", handleObjectRotating);
+    canvas.on("object:modified", handleObjectModified);
     canvas.on("object:added", handleObjectAdded);
     canvas.on("object:removed", handleObjectRemoved);
     canvas.on("selection:cleared", handleSelectionCleared);
@@ -311,20 +304,20 @@ const ModelWrapper = ({ Model, cameraRef, orbitRef }) => {
     const onMessage = (event) => {
       const data = event.data || {};
       if (data.type === "request-canvas-snapshot") {
-        sendSnapshot(true);
+        sendSnapshot();
       }
     };
     window.addEventListener("message", onMessage);
 
     // Send one snapshot immediately on init (blank with white background)
-    sendSnapshot(true);
+    sendSnapshot();
 
     // Cleanup on unmount
     return () => {
       canvas.off("object:moving", handleObjectMoving);
-      canvas.off("object:modified", handleObjectModified);
       canvas.off("object:scaling", handleObjectScaling);
       canvas.off("object:rotating", handleObjectRotating);
+      canvas.off("object:modified", handleObjectModified);
       canvas.off("object:added", handleObjectAdded);
       canvas.off("object:removed", handleObjectRemoved);
       canvas.off("selection:cleared", handleSelectionCleared);
@@ -361,61 +354,18 @@ const CanvasTexture = React.memo(({ flip }) => {
   const { canvas, update, unsportedDevice, selectedModel } =
     useContext(ContextTool);
   const textureRef = useRef();
-  const updateModel = useCallback(() => {
-    if (unsportedDevice) {
-      if (textureRef.current && update) {
-        textureRef.current.needsUpdate = true;
-        invalidate();
-      }
-    } else {
-      if (textureRef.current) {
-        textureRef.current.needsUpdate = true;
-        invalidate();
-      }
-    }
-  }, [update, unsportedDevice]);
 
+  // Use live canvas texture binding for real-time updates
   useFrame(({ gl }) => {
-    updateModel();
-  });
-
-  const updateTexture = () => {
-    canvas.renderAll();
-    textureRef.current.needsUpdate = true;
-    invalidate();
-  };
-  useEffect(() => {
-    if (unsportedDevice) {
-      canvas.on("object:moving", updateTexture);
-      canvas.on("object:scaling", updateTexture);
-      canvas.on("object:resizing", updateTexture);
-      canvas.on("object:rotating", updateTexture);
-      canvas.on("object:added", updateTexture);
-      canvas.on("object:modified", updateTexture);
-      canvas.on("selection:created", updateTexture);
-      canvas.on("selection:updated", updateTexture);
-      canvas.on("selection:cleared", updateTexture);
+    if (textureRef.current && canvas) {
+      textureRef.current.needsUpdate = true;
+      invalidate();
     }
-
-    return () => {
-      if (unsportedDevice) {
-        canvas.off("object:moving", updateTexture);
-        canvas.off("object:scaling", updateTexture);
-        canvas.off("object:resizing", updateTexture);
-        canvas.off("object:rotating", updateTexture);
-        canvas.off("object:added", updateTexture);
-        canvas.off("object:modified", updateTexture);
-        canvas.off("selection:created", updateTexture);
-        canvas.off("selection:updated", updateTexture);
-        canvas.off("selection:cleared", updateTexture);
-      }
-    };
-  }, []);
+  });
 
   return (
     <meshStandardMaterial
       polygonOffset
-      // polygonOffsetFactor={10}
       transparent
       toneMapped={true}
     >
