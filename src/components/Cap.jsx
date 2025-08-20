@@ -10,7 +10,7 @@ export function Cap(props) {
       <directionalLight position={[5, 5, 5]} intensity={2} />
       <group
         name="Scene"
-        scale={2.5} rotation={[0.25,0.25,0]}
+        scale={2.5} rotation={[Math.PI / 2,0,0]}
       >
         <mesh name="Plane"  geometry={nodes.Plane.geometry}           material={materials.Material}
           scale={0.025}
