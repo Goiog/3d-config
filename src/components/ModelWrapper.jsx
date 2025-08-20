@@ -21,8 +21,8 @@ const ModelWrapper = ({ Model, cameraRef, orbitRef }) => {
     var mouse = new THREE.Vector2();
     var onClickPosition = new THREE.Vector2();
     const container = document.querySelector("#cont");
-
-
+    
+    
     fabric.Canvas.prototype.getPointer = function (e, ignoreZoom) {
       if (this._absolutePointer && !ignoreZoom) {
         return this._absolutePointer;
@@ -177,12 +177,17 @@ const ModelWrapper = ({ Model, cameraRef, orbitRef }) => {
       let CORRECTION_VALUE = axis === "x" ? 4.5 : 5.5;
 
 
+      
       function getRealPosition(axis, value) {
         const container = document.querySelector("#cont");
         if (!container) return 0;
         const rect = container.getBoundingClientRect();
         return Math.round(value * (axis === "x" ? rect.width : rect.height));
       }
+
+
+
+      
     }
 
     var getMousePosition = function (dom, x, y) {
@@ -202,73 +207,79 @@ const ModelWrapper = ({ Model, cameraRef, orbitRef }) => {
 
 
 
-  useEffect(() => {
-    if (!canvas) return;
+  
+ useEffect(() => {
+  if (!canvas) return;
 
-    // Give the canvas a white background right away
-    canvas.setBackgroundColor('#ffffff', canvas.renderAll.bind(canvas));
+  // Give the canvas a white background right away
+  canvas.setBackgroundColor('#ffffff', canvas.renderAll.bind(canvas));
 
-    // Handle transform updates from parent
-    const handleTransformUpdate = (event) => {
-      const data = event.data || {};
-      if (data.type === "update-transform" && data.payload) {
-        const { id, x, y, scale, rotation } = data.payload;
-        
-        // Find the fabric object by ID
-        const objects = canvas.getObjects();
-        const targetObject = objects.find(obj => obj._id === id);
-        
-        if (targetObject) {
-          // Apply transforms directly to fabric object
-          if (x !== undefined) targetObject.set('left', x);
-          if (y !== undefined) targetObject.set('top', y);
-          if (scale !== undefined) targetObject.set('scaleX', scale / 500).set('scaleY', scale / 500);
-          if (rotation !== undefined) targetObject.set('angle', rotation);
-          
-          // Update canvas and 3D texture
-          targetObject.setCoords();
-          canvas.renderAll();
-          
-          if (textureRef.current) {
-            textureRef.current.needsUpdate = true;
-            invalidate();
-          }
-        }
-      }
-    };
+  // Function to capture and send the current canvas as PNG
+  const sendSnapshot = () => {
+    const el = canvas.getElement();
 
-    // Handle canvas events for 3D texture updates only
-    const handleCanvasChange = () => {
-      // Only trigger 3D texture update
-      if (textureRef.current) {
-        textureRef.current.needsUpdate = true;
-        invalidate();
-      }
-    };
+    // Crop box (your current Mug wrap area guess)
+    //const cropX = 12;
+    //const cropY = 0;
+    //const cropW = 806;
+    //const cropH = 812;
+    const cropX = 0;
+    const cropY = 0;
+    const cropW = 900;
+    const cropH = 900;
+    // Target aspect ratio (8:4)
+    const targetW = 800;
+    const targetH = 400;
 
-    // Bind event handlers for 3D texture updates
-    canvas.on("object:modified", handleCanvasChange);
-    canvas.on("object:added", handleCanvasChange);
-    canvas.on("object:removed", handleCanvasChange);
-    canvas.on("selection:cleared", handleCanvasChange);
-    canvas.on("selection:updated", handleCanvasChange);
+    const tmp = document.createElement("canvas");
+    tmp.width = targetW;
+    tmp.height = targetH;
+    const ctx = tmp.getContext("2d");
 
-    window.addEventListener("message", handleTransformUpdate);
+    // Fill background to avoid “broken image” effect
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, targetW, targetH);
 
-    // Cleanup on unmount
-    return () => {
-      canvas.off("object:modified", handleCanvasChange);
-      canvas.off("object:added", handleCanvasChange);
-      canvas.off("object:removed", handleCanvasChange);
-      canvas.off("selection:cleared", handleCanvasChange);
-      canvas.off("selection:updated", handleCanvasChange);
-      window.removeEventListener("message", handleTransformUpdate);
-    };
-  }, [canvas]);
+    // Draw the fabric canvas content into your 500x200 preview
+    ctx.drawImage(el, cropX, cropY, cropW, cropH, 0, 0, targetW, targetH);
+
+    const url = tmp.toDataURL("image/png");
+    window.parent.postMessage({ type: "canvas-snapshot", payload: { url } }, "*");
+  };
+
+  // Auto-push on fabric events
+  canvas.on("object:added", sendSnapshot);
+  canvas.on("object:modified", sendSnapshot);
+  canvas.on("object:removed", sendSnapshot);
+  canvas.on("selection:cleared", sendSnapshot);
+  canvas.on("selection:updated", sendSnapshot);
+   
+  // Respond to parent requests
+  const onMessage = (event) => {
+    const data = event.data || {};
+    if (data.type === "request-canvas-snapshot") {
+      sendSnapshot();
+    }
+  };
+  window.addEventListener("message", onMessage);
+
+  // Send one snapshot immediately on init (blank 500x200 with white background)
+  sendSnapshot();
+
+  // Cleanup on unmount
+  return () => {
+    canvas.off("object:added", sendSnapshot);
+    canvas.off("object:modified", sendSnapshot);
+    canvas.off("object:removed", sendSnapshot);
+    canvas.off("selection:cleared", sendSnapshot);
+    canvas.off("selection:updated", sendSnapshot);
+    window.removeEventListener("message", onMessage);
+  };
+}, [canvas]);
 
 
 
-
+  
 
   return (
     <>
@@ -287,55 +298,111 @@ const ModelWrapper = ({ Model, cameraRef, orbitRef }) => {
 
 
 
-
 export default ModelWrapper;
 // Till here
 const CanvasTexture = React.memo(({ flip }) => {
   const { canvas, update, unsportedDevice, selectedModel } =
     useContext(ContextTool);
   const textureRef = useRef();
-  const materialRef = useRef();
-
-  // Create live canvas texture when canvas is available
-  useEffect(() => {
-    if (canvas && !textureRef.current) {
-      const fabricEl = canvas.getElement();
-      const texture = new THREE.CanvasTexture(fabricEl);
-      texture.needsUpdate = true;
-      texture.flipY = false;
-      texture.generateMipmaps = false;
-      texture.anisotropy = 16;
-      texture.minFilter = THREE.LinearFilter;
-      texture.magFilter = THREE.LinearFilter;
-      texture.mapping = THREE.EquirectangularReflectionMapping;
-      
-      textureRef.current = texture;
-      
-      // Apply texture to material
-      if (materialRef.current) {
-        materialRef.current.map = texture;
-        materialRef.current.needsUpdate = true;
+  const updateModel = useCallback(() => {
+    if (unsportedDevice) {
+      if (textureRef.current && update) {
+        textureRef.current.needsUpdate = true;
+        invalidate();
+      }
+    } else {
+      if (textureRef.current) {
+        textureRef.current.needsUpdate = true;
+        invalidate();
       }
     }
-  }, [canvas]);
+  }, [update, unsportedDevice]);
 
-  // Update texture every frame for real-time rendering
-  useFrame(() => {
-    if (textureRef.current && canvas) {
-      textureRef.current.needsUpdate = true;
-      invalidate();
-    }
+  useFrame(({ gl }) => {
+    updateModel();
   });
+
+  const updateTexture = () => {
+    canvas.renderAll();
+    textureRef.current.needsUpdate = true;
+    invalidate();
+  };
+  useEffect(() => {
+    if (unsportedDevice) {
+      canvas.on("object:moving", updateTexture);
+      canvas.on("object:scaling", updateTexture);
+      canvas.on("object:resizing", updateTexture);
+      canvas.on("object:rotating", updateTexture);
+      canvas.on("object:added", updateTexture);
+      canvas.on("object:modified", updateTexture);
+      canvas.on("selection:created", updateTexture);
+      canvas.on("selection:updated", updateTexture);
+      canvas.on("selection:cleared", updateTexture);
+    }
+
+    return () => {
+      if (unsportedDevice) {
+        canvas.off("object:moving", updateTexture);
+        canvas.off("object:scaling", updateTexture);
+        canvas.off("object:resizing", updateTexture);
+        canvas.off("object:rotating", updateTexture);
+        canvas.off("object:added", updateTexture);
+        canvas.off("object:modified", updateTexture);
+        canvas.off("selection:created", updateTexture);
+        canvas.off("selection:updated", updateTexture);
+        canvas.off("selection:cleared", updateTexture);
+      }
+    };
+  }, []);
 
   return (
     <meshStandardMaterial
-      ref={materialRef}
-      map={textureRef.current}
       polygonOffset
+      // polygonOffsetFactor={10}
       transparent
       toneMapped={true}
-    />
+    >
+      <canvasTexture
+        ref={textureRef}
+        attach="map"
+        image={canvas.getElement()}
+        needsUpdate
+        flipY={false}
+        generateMipmaps={false}
+        anisotropy={16}
+        minFilter={THREE.LinearFilter}
+        magFilter={THREE.LinearFilter}
+        mapping={THREE.EquirectangularReflectionMapping}
+      />
+    </meshStandardMaterial>
   );
 });
 
 export { CanvasTexture };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
