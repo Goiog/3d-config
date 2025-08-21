@@ -225,8 +225,8 @@ const { width: canvasW, height: canvasH } = el;
 // (adjust these ratios once to fit your mug wrap area)
 const cropX = 0; 
 const cropY = 0;
-const cropW = canvasW * 0.47;   // instead of 900 fixed
-const cropH = canvasH * 0.83;   // instead of 900 fixed
+const cropW = canvasW;   // instead of 900 fixed
+const cropH = canvasH;   // instead of 900 fixed
 
 // Target aspect ratio (8:4)
 const targetW = 800;
@@ -389,6 +389,7 @@ const CanvasTexture = React.memo(({ flip }) => {
 });
 
 export { CanvasTexture };
+
 
 
 
