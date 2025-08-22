@@ -231,7 +231,11 @@ const cropH = canvasH;   // instead of 900 fixed
 // Target aspect ratio (8:4)
 let targetW, targetH;
 switch (selectedModel.current) {
-  case "Mug": targetW = 800; targetH = 400; break;
+  case "Mug":
+  const aspect = el.width / el.height; // keep fabric canvas aspect
+  targetW = 800;
+  targetH = Math.round(800 / aspect);
+  break;
   case "Shirt": targetW = 600; targetH = 300; break;
   case "Cap":
   const aspect = el.width / el.height; // keep fabric canvas aspect
@@ -399,6 +403,7 @@ const CanvasTexture = React.memo(({ flip }) => {
 });
 
 export { CanvasTexture };
+
 
 
 
