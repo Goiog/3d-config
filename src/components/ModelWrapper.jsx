@@ -229,8 +229,13 @@ const cropW = canvasW;   // instead of 900 fixed
 const cropH = canvasH;   // instead of 900 fixed
 
 // Target aspect ratio (8:4)
-const targetW = 800;
-const targetH = 400;
+let targetW, targetH;
+switch (selectedModel.current) {
+  case "Mug": targetW = 800; targetH = 400; break;
+  case "Shirt": targetW = 600; targetH = 300; break;
+  case "Cap": targetW = 600; targetH = 400; break;
+  case "Poster": targetW = 1000; targetH = 800; break;
+}
 
 const tmp = document.createElement("canvas");
 tmp.width = targetW;
@@ -389,6 +394,7 @@ const CanvasTexture = React.memo(({ flip }) => {
 });
 
 export { CanvasTexture };
+
 
 
 
