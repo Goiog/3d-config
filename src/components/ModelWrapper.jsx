@@ -239,10 +239,10 @@ switch (selectedModel.current) {
   case "Shirt": targetW = 600; targetH = 300; break;
   case "Cap":
   const aspect = el.width / el.height; // keep fabric canvas aspect
-  cropX=canvasH/4
-  cropY=0
-  cropW=canvasH/2
-  cropH=canvasH
+  cropX=canvasH/4;
+  cropY=0;
+  cropW=canvasH/2;
+  cropH=canvasH;
   targetW = 800;
   targetH = Math.round(800 / aspect);
   break;
@@ -407,6 +407,7 @@ const CanvasTexture = React.memo(({ flip }) => {
 });
 
 export { CanvasTexture };
+
 
 
 
