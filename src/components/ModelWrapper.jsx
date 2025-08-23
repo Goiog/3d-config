@@ -238,6 +238,7 @@ switch (selectedModel.current) {
     targetW = 600; targetH = 300;
     break;
   case "Cap":
+    ctx.scale(2, 1);
     targetW = 800; targetH = 400;
     break;
   case "Poster":
@@ -404,6 +405,7 @@ const CanvasTexture = React.memo(({ flip }) => {
 });
 
 export { CanvasTexture };
+
 
 
 
