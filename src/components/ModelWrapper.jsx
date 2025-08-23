@@ -223,23 +223,32 @@ const { width: canvasW, height: canvasH } = el;
 
 // Crop area as a percentage of canvas size
 // (adjust these ratios once to fit your mug wrap area)
-const cropX = 0; 
-const cropY = 0;
-const cropW = canvasW;   // instead of 900 fixed
-const cropH = canvasH;   // instead of 900 fixed
+let cropX = 0;
+let cropY = 0;
+let cropW = canvasW;
+let cropH = canvasH;
 
-// Target aspect ratio (8:4)
 let targetW, targetH;
+
 switch (selectedModel.current) {
-  case "Mug": targetW = 800; targetH = 400; break;
-  case "Shirt": targetW = 600; targetH = 300; break;
-  case "Cap": 
-  cropX = 0; // center horizontally
-  cropY = canvasH/ 4; // center vertically
-  cropW = 0;
-  cropH = canvasH/ 2;
- break;
-  case "Poster": targetW = 1000; targetH = 800; break;
+  case "Mug":
+    targetW = 800; targetH = 400;
+    break;
+  case "Shirt":
+    targetW = 600; targetH = 300;
+    break;
+  case "Cap":
+    cropX = 0; 
+    cropY = canvasH / 4; 
+    cropW = canvasW; 
+    cropH = canvasH / 2;
+    targetW = 400; targetH = 200; // example — keep consistent
+    break;
+  case "Poster":
+    targetW = 1000; targetH = 800;
+    break;
+  default:
+    console.warn("Unknown model selected:", selectedModel.current);
 }
 
 const tmp = document.createElement("canvas");
@@ -399,6 +408,7 @@ const CanvasTexture = React.memo(({ flip }) => {
 });
 
 export { CanvasTexture };
+
 
 
 
