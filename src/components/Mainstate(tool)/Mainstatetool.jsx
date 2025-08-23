@@ -443,10 +443,7 @@ function Mainstatetool({ children }) {
                 left: e.target.left,
                 angle: e.target.angle,
                 _id: e.target._id,
-                scale:
-                  selectedModel.current === "Poster"
-                    ? e.target.width * e.target.scaleY
-                    : e.target.width * e.target.scaleX,
+                scale: e.target.width * e.target.scaleX,
               },
             },
             "*"
@@ -510,10 +507,7 @@ function Mainstatetool({ children }) {
                 left: e.selected[0].left,
                 angle: e.selected[0].angle,
                 _id: e.selected[0]._id,
-                scale:
-                  selectedModel.current === "Poster"
-                    ? e.selected[0].width * e.selected[0].scaleY
-                    : e.selected[0].width * e.selected[0].scaleX,
+                scale: e.selected[0].width * e.selected[0].scaleX,
               },
             },
             "*"
@@ -577,10 +571,7 @@ function Mainstatetool({ children }) {
                 left: e.selected[0].left,
                 angle: e.selected[0].angle,
                 _id: e.selected[0]._id,
-                scale:
-                  selectedModel.current === "Poster"
-                    ? e.selected[0].width * e.selected[0].scaleY
-                    : e.selected[0].width * e.selected[0].scaleX,
+                scale: e.selected[0].width * e.selected[0].scaleX,
               },
             },
             "*"
@@ -972,4 +963,5 @@ function Mainstatetool({ children }) {
 export default Mainstatetool;
 
 export { ContextTool };
+
 
