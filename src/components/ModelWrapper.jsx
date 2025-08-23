@@ -233,11 +233,11 @@ let targetW, targetH;
 switch (selectedModel.current) {
   case "Mug": targetW = 800; targetH = 400; break;
   case "Shirt": targetW = 600; targetH = 300; break;
-  case "Cap":  const side = Math.min(canvasW, canvasH); // ensure square
-  cropX = (canvasW - side) / 2; // center horizontally
-  cropY = (canvasH - side) / 2; // center vertically
-  cropW = side;
-  cropH = side;
+  case "Cap": 
+  cropX = 0; // center horizontally
+  cropY = canvasH/ 4; // center vertically
+  cropW = 0;
+  cropH = canvasH/ 2;
  break;
   case "Poster": targetW = 1000; targetH = 800; break;
 }
@@ -399,6 +399,7 @@ const CanvasTexture = React.memo(({ flip }) => {
 });
 
 export { CanvasTexture };
+
 
 
 
