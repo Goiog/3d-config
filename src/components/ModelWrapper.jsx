@@ -243,13 +243,13 @@ switch (selectedModel.current) {
     targetW = 800; targetH = 400;
     break;
   case "Shirt":
-    targetW = 600; targetH = 300;
+    targetW = 400; targetH = 600;
     break;
   case "Cap":
     targetW = 800; targetH = 400;
     break;
   case "Poster":
-    targetW = 1000; targetH = 800;
+    targetW = 800; targetH = 1000;
     break;
   default:
     console.warn("Unknown model selected:", selectedModel.current);
@@ -412,6 +412,7 @@ const CanvasTexture = React.memo(({ flip }) => {
 });
 
 export { CanvasTexture };
+
 
 
 
