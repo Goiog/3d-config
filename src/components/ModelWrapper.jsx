@@ -242,7 +242,7 @@ switch (selectedModel.current) {
     cropY = canvasH / 4; 
     cropW = canvasW; 
     cropH = canvasH / 2;
-    targetW = 8000; targetH = 4000; // example — keep consistent
+    targetW = 80; targetH = 40; // example — keep consistent
     break;
   case "Poster":
     targetW = 1000; targetH = 800;
@@ -408,6 +408,7 @@ const CanvasTexture = React.memo(({ flip }) => {
 });
 
 export { CanvasTexture };
+
 
 
 
