@@ -244,7 +244,7 @@ function Mainstatetool({ children }) {
             (selectedModel.current === "Shirt")
               ? scaleFactor * 2
               : (selectedModel.current === "Poster")
-                  ? scaleFactor * 1.2
+                  ? scaleFactor * 1.36
                   : scaleFactor;
           img.scaleY =
             (selectedModel.current === "Mug" || selectedModel.current === "Cap")
@@ -981,6 +981,7 @@ function Mainstatetool({ children }) {
 export default Mainstatetool;
 
 export { ContextTool };
+
 
 
 
