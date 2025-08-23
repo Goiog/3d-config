@@ -270,7 +270,6 @@ ctx.fillRect(0, 0, targetW, targetH);
 ctx.save(); // isolate transform
 
 switch (selectedModel.current) {
-  case "Shirt":
   case "Poster":
     // Rotate 180° around canvas center
     ctx.translate(targetW / 2, targetH / 2);
@@ -279,6 +278,7 @@ switch (selectedModel.current) {
     break;
   case "Mug":
   case "Cap":
+  case "Shirt":
     // No rotation
     break;
   default:
@@ -288,7 +288,7 @@ switch (selectedModel.current) {
 let drawCropX = cropX;
 let drawCropY = cropY;
 
-if (selectedModel.current === "Shirt" || selectedModel.current === "Poster") {
+if (selectedModel.current === "Poster") {
   drawCropX = el.width - cropX - cropW;
   drawCropY = el.height - cropY - cropH;
 }
@@ -442,6 +442,7 @@ const CanvasTexture = React.memo(({ flip }) => {
 });
 
 export { CanvasTexture };
+
 
 
 
