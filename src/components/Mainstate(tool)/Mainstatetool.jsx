@@ -240,7 +240,12 @@ function Mainstatetool({ children }) {
           }
 
           // In addImageLayer
-          img.scaleX = scaleFactor;
+          img.scaleX =
+            (selectedModel.current === "Shirt")
+              ? scaleFactor * 2
+              : (selectedModel.current === "Poster")
+                  ? scaleFactor * 1.2
+                  : scaleFactor;
           img.scaleY =
             (selectedModel.current === "Mug" || selectedModel.current === "Cap")
               ? scaleFactor * 2
@@ -319,7 +324,13 @@ function Mainstatetool({ children }) {
       ) {
         if (scale) {
           const uniformScale = +scale / canvas.current.getActiveObject().width;
-          canvas.current.getActiveObject().set("scaleX", uniformScale);
+          canvas.current.getActiveObject().set("scaleX",
+            (selectedModel.current === "Shirt")
+              ? uniformScale * 2
+              : (selectedModel.current === "Poster")
+                ? uniformScale * 1.2
+                : uniformScale
+          );
           canvas.current.getActiveObject().set(
             "scaleY",
             (selectedModel.current === "Mug" || selectedModel.current === "Cap")
@@ -970,6 +981,7 @@ function Mainstatetool({ children }) {
 export default Mainstatetool;
 
 export { ContextTool };
+
 
 
 
