@@ -85,7 +85,14 @@ const ModelWrapper = ({ Model, cameraRef, orbitRef }) => {
       canvas.on("object:modified", function (event) {
         objMoving = false;
       });
-
+    selectedModel.current === "Cap" &&
+      canvas.on("object:moving", function (event) {
+        objMoving = true;
+      });
+    selectedModel.current === "Cap" &&
+      canvas.on("object:modified", function (event) {
+        objMoving = false;
+      });
     function onMouseEvt(evt) {
       evt.preventDefault();
       isMouseDown = true;
@@ -404,6 +411,7 @@ const CanvasTexture = React.memo(({ flip }) => {
 });
 
 export { CanvasTexture };
+
 
 
 
