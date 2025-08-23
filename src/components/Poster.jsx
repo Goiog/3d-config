@@ -32,7 +32,7 @@ export function Poster(props) {
       <directionalLight position={[0, 0, 1]} intensity={3} />
       <group
         name="Scene"
-        scale={[0.25,0.25,0.25]} rotation={[Math.PI / 2,0,-0.3]}
+        scale={[0.25,0.25,0.25]} rotation={[Math.PI / 2,0,0.3]}
       >
         <mesh
           name="Plane007"
@@ -69,7 +69,7 @@ export function Poster(props) {
             {/* <CanvasTexture /> */}
           </mesh>
         <mesh name="EscudoRayo"  geometry={nodes.EscudoRayo.geometry} material={materials.Escudo}
-          scale={[0.1,1,1]}
+          scale={[1,1,1]}
         />
         <mesh name="Cube004" castShadow
             receiveShadow geometry={nodes.Cube004.geometry} material={materials.Material_003}
@@ -80,7 +80,6 @@ export function Poster(props) {
 }
 
 useGLTF.preload("/poster2.glb");
-
 
 
 
