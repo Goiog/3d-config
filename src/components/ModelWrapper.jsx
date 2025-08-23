@@ -156,7 +156,7 @@ const ModelWrapper = ({ Model, cameraRef, orbitRef }) => {
       }
       if (
         selectedModel.current === "Cap" &&
-        intersects[0].object.name !== "PlaneCanvas"
+        intersects[0].object.name !== "CupDrawArea"
       ) {
         !objMoving && canvas.discardActiveObject();
         intersects[0] = null;
@@ -412,6 +412,7 @@ const CanvasTexture = React.memo(({ flip }) => {
 });
 
 export { CanvasTexture };
+
 
 
 
