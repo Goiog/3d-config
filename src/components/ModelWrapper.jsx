@@ -400,7 +400,7 @@ const CanvasTexture = React.memo(({ flip }) => {
         attach="map"
         image={canvas.getElement()}
         needsUpdate
-        flipY={false}
+        flipY={selectedModel.current === "Poster"} // flip only for Poster
         generateMipmaps={false}
         anisotropy={16}
         minFilter={THREE.LinearFilter}
@@ -412,6 +412,7 @@ const CanvasTexture = React.memo(({ flip }) => {
 });
 
 export { CanvasTexture };
+
 
 
 
