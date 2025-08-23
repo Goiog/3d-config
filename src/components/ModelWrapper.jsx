@@ -260,39 +260,38 @@ tmp.width = targetW;
 tmp.height = targetH;
 const ctx = tmp.getContext("2d");
 
+// Reset transform each time
+ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+// Always clear background
+ctx.fillStyle = "#ffffff";
+ctx.fillRect(0, 0, targetW, targetH);
+
+ctx.save(); // isolate transform
+
 switch (selectedModel.current) {
-  case "Mug":
-    interactiveCtx.rotate(0);
-    break;
   case "Shirt":
-    interactiveCtx.rotate(Math.PI);
-    break;
-  case "Cap":
-    interactiveCtx.rotate(0);
-    break;
   case "Poster":
-    interactiveCtx.rotate(Math.PI);
+    // Rotate 180° around canvas center
+    ctx.translate(targetW / 2, targetH / 2);
+    ctx.rotate(Math.PI);
+    ctx.translate(-targetW / 2, -targetH / 2);
+    break;
+  case "Mug":
+  case "Cap":
+    // No rotation
     break;
   default:
     console.warn("Unknown model selected:", selectedModel.current);
 }
 
-    
-ctx.fillStyle = "#ffffff";
-ctx.fillRect(0, 0, targetW, targetH);
-
-// Draw cropped part scaled into target size
 ctx.drawImage(
   el,
-  cropX,
-  cropY,
-  cropW,
-  cropH,
-  0,
-  0,
-  targetW,
-  targetH
+  cropX, cropY, cropW, cropH,
+  0, 0, targetW, targetH
 );
+
+ctx.restore();
 
 const url = tmp.toDataURL("image/png");
 window.parent.postMessage({ type: "canvas-snapshot", payload: { url } }, "*");
@@ -430,6 +429,7 @@ const CanvasTexture = React.memo(({ flip }) => {
 });
 
 export { CanvasTexture };
+
 
 
 
