@@ -3,7 +3,7 @@ import { useGLTF } from "@react-three/drei";
 import { CanvasTexture } from "./ModelWrapper";
 import { ContextTool } from "./Mainstate(tool)/Mainstatetool";
 
-export function Mug(props) {
+export function Cap(props) {
   const { nodes, materials } = useGLTF("/Cap.glb");
   const { canvas } = useContext(ContextTool);
   function decreaseOpacity(hex, amount = 0.1) {
@@ -65,6 +65,7 @@ export function Mug(props) {
 }
 
 useGLTF.preload("/Cap.glb");
+
 
 
 
