@@ -218,33 +218,48 @@ const ModelWrapper = ({ Model, cameraRef, orbitRef }) => {
   const sendSnapshot = () => {
     const el = canvas.getElement();
 
-    // Crop box (your current Mug wrap area guess)
-    //const cropX = 12;
-    //const cropY = 0;
-    //const cropW = 806;
-    //const cropH = 812;
-    const cropX = 0;
-    const cropY = 0;
-    const cropW = 900;
-    const cropH = 900;
-    // Target aspect ratio (8:4)
-    const targetW = 800;
-    const targetH = 400;
+// Get actual canvas dimensions
+const { width: canvasW, height: canvasH } = el;
 
-    const tmp = document.createElement("canvas");
-    tmp.width = targetW;
-    tmp.height = targetH;
-    const ctx = tmp.getContext("2d");
+// Crop area as a percentage of canvas size
+// (adjust these ratios once to fit your mug wrap area)
+const cropX = 0; 
+const cropY = 0;
+const cropW = canvasW;   // instead of 900 fixed
+const cropH = canvasH;   // instead of 900 fixed
 
-    // Fill background to avoid “broken image” effect
-    ctx.fillStyle = "#ffffff";
-    ctx.fillRect(0, 0, targetW, targetH);
+// Target aspect ratio (8:4)
+let targetW, targetH;
+switch (selectedModel.current) {
+  case "Mug": targetW = 800; targetH = 400; break;
+  case "Shirt": targetW = 600; targetH = 300; break;
+  case "Cap": targetW = 800; targetH = 400; break;
+  case "Poster": targetW = 1000; targetH = 800; break;
+}
 
-    // Draw the fabric canvas content into your 500x200 preview
-    ctx.drawImage(el, cropX, cropY, cropW, cropH, 0, 0, targetW, targetH);
+const tmp = document.createElement("canvas");
+tmp.width = targetW;
+tmp.height = targetH;
+const ctx = tmp.getContext("2d");
 
-    const url = tmp.toDataURL("image/png");
-    window.parent.postMessage({ type: "canvas-snapshot", payload: { url } }, "*");
+ctx.fillStyle = "#ffffff";
+ctx.fillRect(0, 0, targetW, targetH);
+
+// Draw cropped part scaled into target size
+ctx.drawImage(
+  el,
+  cropX,
+  cropY,
+  cropW,
+  cropH,
+  0,
+  0,
+  targetW,
+  targetH
+);
+
+const url = tmp.toDataURL("image/png");
+window.parent.postMessage({ type: "canvas-snapshot", payload: { url } }, "*");
   };
 
   // Auto-push on fabric events
@@ -379,6 +394,12 @@ const CanvasTexture = React.memo(({ flip }) => {
 });
 
 export { CanvasTexture };
+
+
+
+
+
+
 
 
 
