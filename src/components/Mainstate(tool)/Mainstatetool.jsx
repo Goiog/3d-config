@@ -239,8 +239,12 @@ function Mainstatetool({ children }) {
             scaleFactor = widthRatio;
           }
 
+          // In addImageLayer
           img.scaleX = scaleFactor;
-          img.scaleY = scaleFactor * 2;
+          img.scaleY =
+            (selectedModel.current === "Mug" || selectedModel.current === "Cap")
+              ? scaleFactor * 2
+              : scaleFactor;
         
 
         imgId = img.id;
@@ -314,12 +318,15 @@ function Mainstatetool({ children }) {
         canvas.current.getActiveObject().typeObj === "image"
       ) {
         if (scale) {
-            const uniformScale =
-              +scale / canvas.current.getActiveObject().width;
-            canvas.current.getActiveObject().set("scaleX", uniformScale);
-            canvas.current.getActiveObject().set("scaleY", uniformScale * 2);
+          const uniformScale = +scale / canvas.current.getActiveObject().width;
+          canvas.current.getActiveObject().set("scaleX", uniformScale);
+          canvas.current.getActiveObject().set(
+            "scaleY",
+            (selectedModel.current === "Mug" || selectedModel.current === "Cap")
+              ? uniformScale * 2
+              : uniformScale
+          );
         }
-
         canvas.current.getActiveObject().set("top", +top);
         canvas.current.getActiveObject().set("left", +left);
 
@@ -963,5 +970,6 @@ function Mainstatetool({ children }) {
 export default Mainstatetool;
 
 export { ContextTool };
+
 
 
