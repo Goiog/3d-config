@@ -237,7 +237,16 @@ switch (selectedModel.current) {
   targetH = Math.round(800 / aspect);
   break;
   case "Shirt": targetW = 600; targetH = 300; break;
-  case "Cap":targetW = 800; targetH = 400; break;
+  case "Cap":const aspectCap = el.width / el.height;
+  const side = Math.min(canvasW, canvasH); // ensure square
+  cropX = (canvasW - side) / 2; // center horizontally
+  cropY = (canvasH - side) / 2; // center vertically
+  cropW = side;
+  cropH = side;
+
+  targetW = 800;
+  targetH = 800; // force square for cap
+    break;
 
 
   case "Poster": targetW = 1000; targetH = 800; break;
@@ -400,6 +409,7 @@ const CanvasTexture = React.memo(({ flip }) => {
 });
 
 export { CanvasTexture };
+
 
 
 
