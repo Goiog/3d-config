@@ -37,41 +37,41 @@ function Mainstatetool({ children }) {
 
   const positions = {
     Shirt: {
-      x: 230,
-      y: 580,
+      x: 450,
+      y: 350,
     },
     Mug: { x: 450, y: 350 },
-    Cap: { x: 525, y: 800 },
-    Poster: { x: 470, y: 485 },
+    Cap: { x: 450, y: 350 },
+    Poster: { x: 450, y: 350 },
   };
 
   const ImageSizes = {
     Shirt: {
-      width: 200,
-      height: 250,
+      width: 920,
+      height: 450,
     },
     Mug: {
       width: 920,
       height: 450,
     },
     Cap: {
-      width: 200,
-      height: 250,
+      width: 920,
+      height: 450,
     },
     Poster: {
       width: 920,
-      height: 560,
+      height: 450,
     },
   };
 
   const ImagePos = {
     Shirt: {
-      x: 230,
-      y: 480,
+      x: 450,
+      y: 450,
     },
     Mug: { x: 450, y: 450 },
-    Cap: { x: 525, y: 750 },
-    Poster: { x: 470, y: 430 },
+    Cap: { x: 450, y: 450 },
+    Poster: { x: 450, y: 450 },
   };
 
   //  For Small Screen
@@ -188,9 +188,9 @@ function Mainstatetool({ children }) {
 
   const addTextLayer = (textDef, _id, fontFamily = "Times New Roman") => {
     let scaleY = fontSize[selectedModel.current];
-    if (selectedModel.current === "Mug") {
+    
       scaleY += 2;
-    }
+    
 
     const textBox = new fabric.Textbox(textDef, {
       typeObj: "text",
@@ -229,7 +229,7 @@ function Mainstatetool({ children }) {
 
         const targetWidth = ImageSizes[selectedModel.current].width;
         const targetHeight = ImageSizes[selectedModel.current].height;
-        if (selectedModel.current === "Mug") {
+        
           const widthRatio = targetWidth / img.width;
           const heightRatio = targetHeight / img.height;
           let scaleFactor;
@@ -241,38 +241,7 @@ function Mainstatetool({ children }) {
 
           img.scaleX = scaleFactor;
           img.scaleY = scaleFactor * 2;
-        } else if (selectedModel.current === "Poster") {
-          const widthRatio = targetWidth / img.width;
-          const heightRatio = targetHeight / img.height;
-
-          let scaleFactor;
-
-          if (img.height > img.width) {
-            scaleFactor = heightRatio;
-          } else {
-            scaleFactor = widthRatio;
-          }
-
-          img.scaleX = scaleFactor * 1.5;
-          img.scaleY = scaleFactor;
-
-          canvas.current.renderAll();
-          img.filters.push(
-            new fabric.Image.filters.Brightness({
-              brightness: 0.07,
-            })
-          );
-
-          img.applyFilters();
-        } else {
-          const scaleFactor = Math.min(
-            targetWidth / img.width,
-            targetHeight / img.height
-          );
-
-          img.scaleX = scaleFactor;
-          img.scaleY = scaleFactor;
-        }
+        
 
         imgId = img.id;
 
@@ -322,9 +291,7 @@ function Mainstatetool({ children }) {
         }
         canvas.current.getActiveObject().set("fill", fill);
         let scaleY = +fontSize;
-        if (selectedModel.current === "Mug") {
-          scaleY += scaleY === 1 ? 1 : 2;
-        }
+        scaleY += scaleY === 1 ? 1 : 2;
         canvas.current.getActiveObject().set("scaleX", fontSize);
         canvas.current.getActiveObject().set("scaleY", scaleY);
 
@@ -347,22 +314,10 @@ function Mainstatetool({ children }) {
         canvas.current.getActiveObject().typeObj === "image"
       ) {
         if (scale) {
-          if (selectedModel.current === "Mug") {
             const uniformScale =
               +scale / canvas.current.getActiveObject().width;
             canvas.current.getActiveObject().set("scaleX", uniformScale);
             canvas.current.getActiveObject().set("scaleY", uniformScale * 2);
-          } else if (selectedModel.current === "Poster") {
-            const uniformScale =
-              +scale / canvas.current.getActiveObject().width;
-            canvas.current.getActiveObject().set("scaleX", uniformScale * 1.5);
-            canvas.current.getActiveObject().set("scaleY", uniformScale);
-          } else {
-            const uniformScale =
-              +scale / canvas.current.getActiveObject().width;
-            canvas.current.getActiveObject().set("scaleX", uniformScale);
-            canvas.current.getActiveObject().set("scaleY", uniformScale);
-          }
         }
 
         canvas.current.getActiveObject().set("top", +top);
@@ -1017,3 +972,4 @@ function Mainstatetool({ children }) {
 export default Mainstatetool;
 
 export { ContextTool };
+
