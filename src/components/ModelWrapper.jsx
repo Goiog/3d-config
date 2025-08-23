@@ -285,12 +285,25 @@ switch (selectedModel.current) {
     console.warn("Unknown model selected:", selectedModel.current);
 }
 
+let drawCropX = cropX;
+let drawCropY = cropY;
+
+if (selectedModel.current === "Shirt" || selectedModel.current === "Poster") {
+  drawCropX = el.width - cropX - cropW;
+  drawCropY = el.height - cropY - cropH;
+}
+
 ctx.drawImage(
   el,
-  cropX, cropY, cropW, cropH,
-  0, 0, targetW, targetH
+  drawCropX,
+  drawCropY,
+  cropW,
+  cropH,
+  0,
+  0,
+  targetW,
+  targetH
 );
-
 ctx.restore();
 
 const url = tmp.toDataURL("image/png");
@@ -429,6 +442,7 @@ const CanvasTexture = React.memo(({ flip }) => {
 });
 
 export { CanvasTexture };
+
 
 
 
