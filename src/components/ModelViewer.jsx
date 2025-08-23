@@ -13,10 +13,10 @@ function ModelViewer({ cameraRef, canvas, orbitRef }) {
   const { selectedModel, smScreen } = useContext(ContextTool);
   const { scene, events } = useThree();
   const Models = {
-    Shirt: <Shirt />,
+    Shirt: <Shirt flip={true}/>,
     Mug: <Mug flip={true} />,
-    Cap: <Cap />,
-    Poster: <Poster />,
+    Cap: <Cap flip={true}/>,
+    Poster: <Poster flip={true}/>,
   };
 
   useEffect(() => {
@@ -51,3 +51,4 @@ function ModelViewer({ cameraRef, canvas, orbitRef }) {
 }
 
 export default ModelViewer;
+
