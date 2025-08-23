@@ -260,6 +260,24 @@ tmp.width = targetW;
 tmp.height = targetH;
 const ctx = tmp.getContext("2d");
 
+switch (selectedModel.current) {
+  case "Mug":
+    interactiveCtx.rotate(0);
+    break;
+  case "Shirt":
+    interactiveCtx.rotate(Math.PI);
+    break;
+  case "Cap":
+    interactiveCtx.rotate(0);
+    break;
+  case "Poster":
+    interactiveCtx.rotate(Math.PI);
+    break;
+  default:
+    console.warn("Unknown model selected:", selectedModel.current);
+}
+
+    
 ctx.fillStyle = "#ffffff";
 ctx.fillRect(0, 0, targetW, targetH);
 
@@ -412,6 +430,7 @@ const CanvasTexture = React.memo(({ flip }) => {
 });
 
 export { CanvasTexture };
+
 
 
 
