@@ -4,7 +4,7 @@ import { CanvasTexture } from "./ModelWrapper";
 import { ContextTool } from "./Mainstate(tool)/Mainstatetool";
 
 export function Mug(props) {
-  const { nodes, materials } = useGLTF("/cup.glb");
+  const { nodes, materials } = useGLTF("/Cap.glb");
   const { canvas } = useContext(ContextTool);
   function decreaseOpacity(hex, amount = 0.1) {
     // Ensure hex is in the format #RRGGBB
@@ -64,7 +64,8 @@ export function Mug(props) {
   );
 }
 
-useGLTF.preload("/cup.glb");
+useGLTF.preload("/Cap.glb");
+
 
 
 
