@@ -226,7 +226,6 @@ useEffect(() => {
 if (!canvas) return;
 
 // Give the canvas a white background right away
-  canvas.setBackgroundColor('#ffffff', canvas.renderAll.bind(canvas));
   //canvas.setBackgroundColor('#ffffff', canvas.renderAll.bind(canvas));
    canvas.setBackgroundColor(null, canvas.renderAll.bind(canvas));
 
@@ -464,4 +463,5 @@ magFilter={THREE.LinearFilter}
 });
 
 export { CanvasTexture };
+
 
