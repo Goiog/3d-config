@@ -158,7 +158,6 @@ return null;
 }
 if (
 selectedModel.current === "Cap" &&
-        intersects[0].object.name !== "PlaneCanvas"
         intersects[0].object.name !== "BaseballCap"
 ) {
 !objMoving && canvas.discardActiveObject();
@@ -461,6 +460,7 @@ magFilter={THREE.LinearFilter}
 });
 
 export { CanvasTexture };
+
 
 
 
