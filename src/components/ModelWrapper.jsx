@@ -220,9 +220,11 @@ useEffect(() => {
 if (!canvas) return;
 
 // Give the canvas a white background right away
-//canvas.setBackgroundColor('#ffffff', canvas.renderAll.bind(canvas));
+if (selectedModel.current === "Mug" || selectedModel.current === "Poster") {
+canvas.setBackgroundColor('#ffffff', canvas.renderAll.bind(canvas));
+} else {
 canvas.setBackgroundColor(null, canvas.renderAll.bind(canvas));
-
+}
 // Function to capture and send the current canvas as PNG
 const sendSnapshot = () => {
 const el = canvas.getElement();
@@ -443,6 +445,7 @@ mapping={THREE.EquirectangularReflectionMapping}
 });
 
 export { CanvasTexture };
+
 
 
 
