@@ -265,7 +265,7 @@ const ctx = tmp.getContext("2d");
 ctx.setTransform(1, 0, 0, 1, 0, 0);
 
 // Always clear background
-//ctx.fillStyle = "#ffffff";
+ctx.fillStyle = "#ffffff";
 ctx.fillRect(0, 0, targetW, targetH);
 
 ctx.save(); // isolate transform
@@ -443,5 +443,6 @@ mapping={THREE.EquirectangularReflectionMapping}
 });
 
 export { CanvasTexture };
+
 
 
