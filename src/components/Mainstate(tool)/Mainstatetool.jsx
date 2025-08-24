@@ -48,7 +48,7 @@ function Mainstatetool({ children }) {
   const ImageSizes = {
     Shirt: {
       width: 920,
-      height: 450,
+      height: 920,
     },
     Mug: {
       width: 920,
@@ -60,7 +60,7 @@ function Mainstatetool({ children }) {
     },
     Poster: {
       width: 920,
-      height: 450,
+      height: 920,
     },
   };
 
@@ -328,14 +328,14 @@ function Mainstatetool({ children }) {
             (selectedModel.current === "Shirt")
               ? uniformScale * 2
               : (selectedModel.current === "Poster")
-                ? uniformScale * 1.2*2
+                ? uniformScale * 1.2
                 : uniformScale
           );
           canvas.current.getActiveObject().set(
             "scaleY",
             (selectedModel.current === "Mug" || selectedModel.current === "Cap")
               ? uniformScale * 2
-              : uniformScale * 2
+              : uniformScale
           );
         }
         canvas.current.getActiveObject().set("top", +top);
@@ -981,6 +981,7 @@ function Mainstatetool({ children }) {
 export default Mainstatetool;
 
 export { ContextTool };
+
 
 
 
