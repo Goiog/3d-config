@@ -32,7 +32,7 @@ export function Poster(props) {
       <directionalLight position={[0, 0, 1]} intensity={3} />
       <group
         name="Scene"
-        rotation={[Math.PI / 2,0,0.2]}
+        scale={[1,1,1]} rotation={[Math.PI / 2,-Math.PI / 2,0.3]}
       >
         <mesh
           name="Plane007"
@@ -80,10 +80,6 @@ export function Poster(props) {
 }
 
 useGLTF.preload("/poster2.glb");
-
-
-
-
 
 
 
