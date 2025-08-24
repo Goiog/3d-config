@@ -335,7 +335,7 @@ function Mainstatetool({ children }) {
             "scaleY",
             (selectedModel.current === "Mug" || selectedModel.current === "Cap")
               ? uniformScale * 2
-              : uniformScale
+              : uniformScale * 2
           );
         }
         canvas.current.getActiveObject().set("top", +top);
@@ -981,6 +981,7 @@ function Mainstatetool({ children }) {
 export default Mainstatetool;
 
 export { ContextTool };
+
 
 
 
