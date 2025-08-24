@@ -226,8 +226,8 @@ useEffect(() => {
 if (!canvas) return;
 
 // Give the canvas a white background right away
-  //canvas.setBackgroundColor('#ffffff', canvas.renderAll.bind(canvas));
-   canvas.setBackgroundColor(null, canvas.renderAll.bind(canvas));
+  canvas.setBackgroundColor('#ffffff', canvas.renderAll.bind(canvas));
+   //canvas.setBackgroundColor(null, canvas.renderAll.bind(canvas));
 
 // Function to capture and send the current canvas as PNG
 const sendSnapshot = () => {
@@ -273,8 +273,8 @@ const ctx = tmp.getContext("2d");
 ctx.setTransform(1, 0, 0, 1, 0, 0);
 
 // Always clear background
-ctx.fillStyle = "#ffffff";
-ctx.fillRect(0, 0, targetW, targetH);
+//ctx.fillStyle = "#ffffff";
+//ctx.fillRect(0, 0, targetW, targetH);
 
 ctx.save(); // isolate transform
 
@@ -440,8 +440,7 @@ return (
 polygonOffset
 // polygonOffsetFactor={10}
 transparent
-      toneMapped={true}
-      toneMapped={false}
+toneMapped={false}
 >
 <canvasTexture
 ref={textureRef}
@@ -455,13 +454,13 @@ generateMipmaps={false}
 anisotropy={16}
 minFilter={THREE.LinearFilter}
 magFilter={THREE.LinearFilter}
-        mapping={THREE.EquirectangularReflectionMapping}
-        //mapping={THREE.EquirectangularReflectionMapping}
+      //  mapping={THREE.EquirectangularReflectionMapping}
 />
 </meshStandardMaterial>
 );
 });
 
 export { CanvasTexture };
+
 
 
