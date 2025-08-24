@@ -328,7 +328,7 @@ function Mainstatetool({ children }) {
             (selectedModel.current === "Shirt")
               ? uniformScale * 2
               : (selectedModel.current === "Poster")
-                ? uniformScale * 1.2
+                ? uniformScale * 1.2*2
                 : uniformScale
           );
           canvas.current.getActiveObject().set(
@@ -981,6 +981,7 @@ function Mainstatetool({ children }) {
 export default Mainstatetool;
 
 export { ContextTool };
+
 
 
 
