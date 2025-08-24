@@ -420,29 +420,31 @@ canvas.off("selection:cleared", updateTexture);
 }, []);
 
 return (
-<meshStandardMaterial
-polygonOffset
-// polygonOffsetFactor={10}
-transparent
-toneMapped={true}
->
-<meshStandardMaterial transparent alphaTest={0.01} toneMapped={false}>
-  <canvasTexture
-    ref={textureRef}
-    attach="map"
-    image={canvas.getElement()}
-    needsUpdate
-    flipY={false}
-    generateMipmaps={false}
-    anisotropy={16}
-    minFilter={THREE.LinearFilter}
-    magFilter={THREE.LinearFilter}
-  />
-</meshStandardMaterial>
-);
+    <meshStandardMaterial
+      polygonOffset
+      // polygonOffsetFactor={10}
+      transparent
+      toneMapped={false}
+    >
+      <canvasTexture
+        ref={textureRef}
+        alphaTest={0.01}
+        attach="map"
+        image={canvas.getElement()}
+        needsUpdate
+        flipY={false}
+        generateMipmaps={false}
+        anisotropy={16}
+        minFilter={THREE.LinearFilter}
+        magFilter={THREE.LinearFilter}
+        //mapping={THREE.EquirectangularReflectionMapping}
+      />
+    </meshStandardMaterial>
+  );
 });
 
 export { CanvasTexture };
+
 
 
 
