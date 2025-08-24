@@ -21,8 +21,6 @@ var raycaster = new THREE.Raycaster();
 var mouse = new THREE.Vector2();
 var onClickPosition = new THREE.Vector2();
 const container = document.querySelector("#cont");
-    
-    
 
 
 fabric.Canvas.prototype.getPointer = function (e, ignoreZoom) {
@@ -158,7 +156,7 @@ return null;
 }
 if (
 selectedModel.current === "Cap" &&
-        intersects[0].object.name !== "BaseballCap"
+intersects[0].object.name !== "PlaneCanvas"
 ) {
 !objMoving && canvas.discardActiveObject();
 intersects[0] = null;
@@ -187,7 +185,6 @@ function getRealPosition(axis, value) {
 let CORRECTION_VALUE = axis === "x" ? 4.5 : 5.5;
 
 
-      
 
 function getRealPosition(axis, value) {
 const container = document.querySelector("#cont");
@@ -198,7 +195,6 @@ return Math.round(value * (axis === "x" ? rect.width : rect.height));
 
 
 
-      
 
 }
 
@@ -219,14 +215,12 @@ return () => container.removeEventListener("mousedown", onMouseEvt, false);
 
 
 
-  
 
 useEffect(() => {
 if (!canvas) return;
 
 // Give the canvas a white background right away
-  canvas.setBackgroundColor('#ffffff', canvas.renderAll.bind(canvas));
-   //canvas.setBackgroundColor(null, canvas.renderAll.bind(canvas));
+canvas.setBackgroundColor('#ffffff', canvas.renderAll.bind(canvas));
 
 // Function to capture and send the current canvas as PNG
 const sendSnapshot = () => {
@@ -249,15 +243,13 @@ case "Mug":
 targetW = 800; targetH = 400;
 break;
 case "Shirt":
-    targetW = 400; targetH = 800;
-    targetW = 600; targetH = 300;
+targetW = 400; targetH = 800;
 break;
 case "Cap":
 targetW = 800; targetH = 400;
 break;
 case "Poster":
     targetW = 800; targetH = 1000;
-    targetW = 1000; targetH = 800;
 break;
 default:
 console.warn("Unknown model selected:", selectedModel.current);
@@ -272,44 +264,39 @@ const ctx = tmp.getContext("2d");
 ctx.setTransform(1, 0, 0, 1, 0, 0);
 
 // Always clear background
-//ctx.fillStyle = "#ffffff";
-//ctx.fillRect(0, 0, targetW, targetH);
+ctx.fillStyle = "#ffffff";
+ctx.fillRect(0, 0, targetW, targetH);
 
 ctx.save(); // isolate transform
 
 switch (selectedModel.current) {
-  case "Poster":
-  case"Shirt":
-    // Rotate 180° around canvas center
-    ctx.translate(targetW / 2, targetH / 2);
-    ctx.rotate(Math.PI);
-    ctx.translate(-targetW / 2, -targetH / 2);
-    break;
-  case "Mug":
-  case "Cap":
-    // No rotation
-    break;
-  default:
-    console.warn("Unknown model selected:", selectedModel.current);
+case "Poster":
+case"Shirt":
+// Rotate 180° around canvas center
+ctx.translate(targetW / 2, targetH / 2);
+ctx.rotate(Math.PI);
+ctx.translate(-targetW / 2, -targetH / 2);
+break;
+case "Mug":
+case "Cap":
+// No rotation
+break;
+default:
+console.warn("Unknown model selected:", selectedModel.current);
 }
 
 let drawCropX = cropX;
 let drawCropY = cropY;
 
 if (selectedModel.current === "Shirt" || selectedModel.current === "Poster") {
-  drawCropX = el.width - cropX - cropW;
-  drawCropY = el.height - cropY - cropH;
+drawCropX = el.width - cropX - cropW;
+drawCropY = el.height - cropY - cropH;
 }
-//ctx.fillStyle = "#ffffff";
-//ctx.fillRect(0, 0, targetW, targetH);
 
-// Draw cropped part scaled into target size
 ctx.drawImage(
 el,
-  drawCropX,
-  drawCropY,
-  cropX,
-  cropY,
+drawCropX,
+drawCropY,
 cropW,
 cropH,
 0,
@@ -318,7 +305,6 @@ targetW,
 targetH
 );
 ctx.restore();
-//ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 const url = tmp.toDataURL("image/png");
 window.parent.postMessage({ type: "canvas-snapshot", payload: { url } }, "*");
@@ -330,7 +316,6 @@ canvas.on("object:modified", sendSnapshot);
 canvas.on("object:removed", sendSnapshot);
 canvas.on("selection:cleared", sendSnapshot);
 canvas.on("selection:updated", sendSnapshot);
-   
 
 // Respond to parent requests
 const onMessage = (event) => {
@@ -357,7 +342,6 @@ window.removeEventListener("message", onMessage);
 
 
 
-  
 
 
 return (
@@ -439,28 +423,23 @@ return (
 polygonOffset
 // polygonOffsetFactor={10}
 transparent
-toneMapped={false}
+toneMapped={true}
 >
 <canvasTexture
 ref={textureRef}
-        alphaTest={0.01}
 attach="map"
 image={canvas.getElement()}
 needsUpdate
-        flipY={selectedModel.current === "Poster"} // flip only for Poster
-        flipY={false}
+flipY={selectedModel.current === "Poster"} // flip only for Poster
 generateMipmaps={false}
 anisotropy={16}
 minFilter={THREE.LinearFilter}
 magFilter={THREE.LinearFilter}
-      //  mapping={THREE.EquirectangularReflectionMapping}
+mapping={THREE.EquirectangularReflectionMapping}
 />
 </meshStandardMaterial>
 );
 });
 
 export { CanvasTexture };
-
-
-
 
